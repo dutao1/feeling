@@ -5,7 +5,5 @@
     <artifactId>baseService-all</artifactId>
     <version>1.0.0</version>
   </parent>
-  <artifactId>feeling-baseService-utils</artifactId>
-  <name>${artifactId}</name>
- <packaging>jar</packaging>
+  <artifactId>feeling-baseService-core</artifactId>
 </project>
