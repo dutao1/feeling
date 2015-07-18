@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		   http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
+          default-autowire="byName">
+
+	<!-- 数据源 -->
+	<bean id="dataSource" 
+	      class="com.mchange.v2.c3p0.ComboPooledDataSource" 
+	      destroy-method="close">
+	   <property name="driverClass" value="${FEELING_JDBC_DRIVER}" />
+	   <property name="jdbcUrl" value="jdbc:mysql://${FEELING_JDBC_HOST}:${FEELING_JDBC_PORT}/${FEELING_JDBC_DBNAME}?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true" />
+	   <property name="user" value="${FEELING_JDBC_USERNAME}" />
+	   <property name="password" value="${FEELING_JDBC_PASSWORD}" />
+	   <property name="initialPoolSize" value="${FEELING_DS_INITIALPOOLSIZE}" />
+	   <property name="minPoolSize" value="${FEELING_DS_MINPOOLSIZE}" />
+	   <property name="maxPoolSize" value="${FEELING_DS_MAXPOOLSIZE}" />
+	   <!-- 最大空闲时间,单位:秒 -->
+       <property name="maxIdleTime" value="60" />
+       <property name="acquireIncrement" value="3" />
+       <property name="maxStatements" value="0" />
+       <!-- 单位:秒 -->
+       <property name="idleConnectionTestPeriod" value="60" />
+       <!-- 从数据库获取新连接失败后，重复尝试获取的次数 -->
+       <property name="acquireRetryAttempts" value="10" />
+       <property name="breakAfterAcquireFailure" value="false" />
+       <!-- 在取得连接时测试连接的有效性，默认为false -->
+       <property name="testConnectionOnCheckin" value="true" />
+       <!-- 在每个connection提交时是否校验其有效性。默认为false -->
+       <property name="testConnectionOnCheckout" value="false" />
+       <property name="checkoutTimeout" value="50000" />
+       <property name="preferredTestQuery" value="SELECT 1 FROM DUAL" />
+	</bean>
+	<!--mybatis与Spring整合 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations" value="classpath*:mappers/*.xml" />
+		<property name="configLocation" value="classpath:mybatis_config.xml" />
+		<property name="typeAliasesPackage" value="com.feeling.dto" />
+	</bean>
+	<!-- scan for mappers and let them be autowired -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.feeling.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+		<qualifier value="main" />
+	</bean>
+	
+</beans>
