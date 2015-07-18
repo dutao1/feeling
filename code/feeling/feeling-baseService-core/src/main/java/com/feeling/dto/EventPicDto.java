@@ -2,11 +2,15 @@ package com.feeling.dto;
 
 import java.util.Date;
 
+import com.feeling.annotation.Table;
+import com.feeling.constants.SqlConstants;
+
 /**
  * 图片事件dto
  * @author dutao
  *
  */
+@Table(name=SqlConstants.EVENT_PIC_TABLE)
 public class EventPicDto {
 	
 	private Integer id;//主键id

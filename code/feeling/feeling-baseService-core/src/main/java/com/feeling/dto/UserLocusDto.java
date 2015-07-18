@@ -1,11 +1,15 @@
 package com.feeling.dto;
 
+import com.feeling.annotation.Table;
+import com.feeling.constants.SqlConstants;
+
 /**
  * 
  * 用户行为
  * @author dutao
  *
  */
+@Table(name=SqlConstants.USER_LOCUS_TABLE)
 public class UserLocusDto extends BaseDto{
 	
 	//类型（0:注册 1：登录 ）

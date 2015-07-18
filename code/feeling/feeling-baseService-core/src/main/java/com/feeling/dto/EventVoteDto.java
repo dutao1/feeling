@@ -2,11 +2,15 @@ package com.feeling.dto;
 
 import java.util.Date;
 
+import com.feeling.annotation.Table;
+import com.feeling.constants.SqlConstants;
+
 /**
  * 投票事件对应dto
  * @author dutao
  *
  */
+@Table(name=SqlConstants.EVENT_VOTE_TABLE)
 public class EventVoteDto {
 
 	private Integer id;//主键id

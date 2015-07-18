@@ -1,11 +1,15 @@
 package com.feeling.dto;
 
+import com.feeling.annotation.Table;
+import com.feeling.constants.SqlConstants;
+
 /**
  * 
  * 事件流转实体【从A传到B，c等等】
  * @author dutao
  *
  */
+@Table(name=SqlConstants.EVENT_CYCLE_TABLE)
 public class EventCycleRecordDto  extends BaseDto {
 
 	 

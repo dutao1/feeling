@@ -1,10 +1,14 @@
 package com.feeling.dto;
 
+import com.feeling.annotation.Table;
+import com.feeling.constants.SqlConstants;
+
 /**
  * 事件评论实体
  * @author dutao
  *
  */
+@Table(name=SqlConstants.EVENT_COMMENT_TABLE)
 public class EventCommentRecordDto extends BaseDto {
 
 	private Integer uid;//用户id
