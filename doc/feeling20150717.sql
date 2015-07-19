@@ -43,7 +43,7 @@ CREATE TABLE `event_base_info` (
   PRIMARY KEY (`id`),
   KEY `i_uid` (`uid`),
   KEY `local_near_index` (`is_display`,`location_long_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='用户创建事件表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='用户创建事件表';
 
 /*Table structure for table `event_comment_record` */
 
@@ -91,9 +91,9 @@ CREATE TABLE `event_cycle_record` (
   `eid` int(11) NOT NULL COMMENT '原始事件id',
   `location_hash` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '经纬度hash值',
   PRIMARY KEY (`id`),
-  KEY `location_long_code` (`location_long_code`,`mobile`,`uid`),
-  KEY `location_hash` (`location_hash`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='事件转发流转记录表';
+  KEY `location_long_code` (`uid`,`mobile`,`location_long_code`),
+  KEY `location_hash` (`uid`,`mobile`,`location_hash`,`location_long_code`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='事件转发流转记录表';
 
 /*Table structure for table `event_pic` */
 
@@ -175,8 +175,9 @@ CREATE TABLE `user_base_info` (
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `nick_name` (`nick_name`),
   KEY `mobile` (`mobile`)
-) ENGINE=InnoDB AUTO_INCREMENT=141 DEFAULT CHARSET=utf8 COMMENT='用户信息';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户信息';
 
 /*Table structure for table `user_locus_info` */
 
