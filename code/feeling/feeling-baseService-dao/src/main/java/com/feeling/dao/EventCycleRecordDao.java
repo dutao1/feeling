@@ -2,6 +2,7 @@ package com.feeling.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.feeling.constants.SqlConstants;
@@ -27,6 +28,6 @@ public interface EventCycleRecordDao  extends  BaseDao<EventCycleRecordDto> {
 	 * @return List<EventCycleRecordDto>
 	 */
 	@Select(SqlConstants.GET_EVENT_CYCLE_BY_ID)
-	public List<EventCycleRecordDto> getEventCycleInfo(Integer eid);
+	public List<EventCycleRecordDto> getEventCycleInfo(@Param("eid")Integer eid);
 	
 }
