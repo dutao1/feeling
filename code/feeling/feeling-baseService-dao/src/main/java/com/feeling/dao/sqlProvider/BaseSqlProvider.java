@@ -21,6 +21,26 @@ import com.feeling.utils.SqlUtil;
 public class BaseSqlProvider {
 	
 	
+	public String selectByPk(Map<String,Object> params) throws Exception {
+		//获取参数
+		Object param = params.get(SqlConstants.PARAM_NAME);
+		if(param==null){
+			throw new OptException(ReturnCodeEnum.SQL_PARAM_NAME_ERROR);
+		}
+		Class clazz = param.getClass();
+		//未定义表
+		Table tableAnno = (Table) clazz.getAnnotation(Table.class);
+		if(tableAnno==null){
+			throw new OptException(ReturnCodeEnum.SQL_TABLE_NAME_EMPTY,clazz.getSimpleName());
+		}
+		String tableName = tableAnno.name();//表名
+		if (param != null&&tableName!=null) {
+			// 更新
+			return "select * from "+tableName+" where id=#{"+SqlConstants.PARAM_NAME+".id}";
+		}
+		return null;
+	}
+	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public String insertObject(Map<String,Object> params) throws Exception {
 		//获取参数

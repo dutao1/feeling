@@ -53,18 +53,19 @@ public class Geohash {//tb8ch6nhr0e9
           
         Geohash geohash = new Geohash();  
         geocode=geohash.encode(lat1, lon1);  
-        System.out.println(geohash.enLongCode(lat1, lon1));
+        long a= geohash.enLongCode(lat1, lon1);
+        System.out.println(a);
         System.out.println("当前位置编码1：" + geocode);  
          
         geocode=geohash.encode(lat2, lon2);  
-        System.out.println(geohash.enLongCode(lat2, lon2));
+        System.out.println(geohash.enLongCode(lat2, lon2)-a);
         System.out.println("远方位置编码2：" + geocode); 
         
         geocode=geohash.encode(lat3, lon3);  
-        System.out.println(geohash.enLongCode(lat3, lon3));
+        System.out.println(geohash.enLongCode(lat3, lon3)-a);
         System.out.println("远方位置编码3：" + geocode); 
         geocode=geohash.encode(lat4, lon4);  
-        System.out.println(geohash.enLongCode(lat4, lon4));
+        System.out.println(geohash.enLongCode(lat4, lon4)-a);
         System.out.println("远方位置编码4：" + geocode); 
     }
  

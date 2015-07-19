@@ -1,10 +1,13 @@
 package com.feeling.constants;
 
-import org.apache.ibatis.annotations.InsertProvider;
 
 /**
  * sql常量
  * @author dutao
+ *
+ */
+/**
+ * @author Lenovo
  *
  */
 public class SqlConstants {
@@ -38,6 +41,49 @@ public class SqlConstants {
 	public static final String INSERT_EVENT_BASE_SQL="insert into "+EVENT_BASE_TABLE+""
 			+ " (uid,event_type,event_city,lat,lon,location_long_code,is_display,create_time,location_hash,mobile,nick_name,device_type,device_imei,device_id) "
 			+ "values (#{uid},#{eventType},#{eventCity},#{lat},#{lon},#{locationLongCode},#{isDisplay},now(),#{locationHash},#{mobile},#{nickName},#{deviceType},#{deviceImei},#{deviceId})";
+	
+	
+	/**
+	 * 根据用户昵称和密码查询是否存在用户
+	 */
+	public static final String CHECK_PWD_SQL = "select id,avatar,status,mobile from "+USER_BASE_TABLE+" where nick_name=#{nickName} and pwd=#{pwd} limit 1" ;
+
+	/**
+	 * 取离最近的前10条记录
+	 */
+	public static final String LIST_NEAR_EVENTS="SELECT id,lat,lon,location_long_code,"
+			        + " location_hash,eid,create_time FROM (  SELECT id,lat,lon,location_long_code,"
+			        + " location_hash,eid,ABS(location_long_code-#{locationLongCode}) nearcode,create_time "
+			        + " FROM event_cycle_record"
+					+"  WHERE uid<>#{uid} AND mobile <>#{mobile}   LIMIT 10"
+					+" ) t  ORDER BY create_time DESC,nearcode ASC";
+
+	/**
+	 * 获得对应事件的评论列表
+	 */
+	public static final String GET_EVENT_COMMENT_LIST_BY_EVENTID="SELECT * FROM event_comment_record WHERE  eid= #{eid} ORDER BY id DESC limit ${offset},${limit}" ;
+			
+	/**
+	 * 获得事件流转生命周期
+	 */
+	public static final String GET_EVENT_CYCLE_BY_ID=" SELECT * FROM  event_cycle_record  WHERE eid=#{eid} ORDER BY from_eid ";
+	
+	/**
+	 * 获得图片事件信息
+	 */
+	public static final String GET_EVENT_PIC_BY_EID="select  * from event_pic where eid=#{eid} ";
+	/**
+	 * 获得文案事件信息
+	 */
+	public static final String GET_EVENT_TEXT_BY_EID="select  * from event_text where eid=#{eid} ";
+	/**
+	 * 获得投票事件信息
+	 */
+	public static final String GET_EVENT_VOTE_BY_EID="select  * from event_vote where eid=#{eid} ";
+	/**
+	 * 根据用户获得所有事件信息
+	 */
+	public static final String GET_EVENT_LIST_BY_UID="select  * from event_base_info where uid=#{uid} limit ${offset},${limit}";
 	
 	
 }

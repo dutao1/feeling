@@ -12,7 +12,8 @@ public enum ReturnCodeEnum  {
 	SQL_PARAM_NAME_ERROR(1001, "sql对象参数必须定义为t"),
 	SQL_TABLE_NAME_EMPTY(1002,"%s实体内需要定义@Table表名"),
 	SQL_PK_EMPTY(1003,"主键更新操作时,主键%s不可为空"),
-	 PARAMETER_ERROR(5001, "请求参数错误，%s")
+	SQL_PK_EMPTY_ERROR(1004, "主键查询id不能为空"),
+	PARAMETER_ERROR(5001, "请求参数错误，%s"),
 	;
 	
 	private int     code;

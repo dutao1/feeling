@@ -4,7 +4,7 @@ import com.feeling.dto.UserLocusDto;
 
 
 /**
- * 用户基本资料dao
+ * 用户行为dao
  * @author dutao
  */
 public interface UserLocusDao  extends  BaseDao<UserLocusDto>{

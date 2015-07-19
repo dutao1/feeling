@@ -26,7 +26,7 @@ public class UserBaseDaoTest  extends DaoTestBase {
 	@Autowired
 	EventBaseDao eventBaseDao;
 	
-	@Test
+	//@Test
 	public void testInsertUserBase(){
 		UserBaseDto u= new UserBaseDto();
 		u.setMobile("13212312313");
@@ -38,8 +38,9 @@ public class UserBaseDaoTest  extends DaoTestBase {
 	}
 	
 	
-	//@Test
+	@Test
 	public void testInsertEventBase(){
+		eventBaseDao.getEventListByUid(1, 1, 1);
 		/*EventBaseDto u= new EventBaseDto();
 		u.setUid(1);
 		u.setEventType("123");
