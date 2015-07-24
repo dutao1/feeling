@@ -140,18 +140,29 @@ public class SqlUtil {
 				if (!b) {
 					Object val = hm.get(key);
 					boolean isCheckOk = false;
+					boolean isAdd =false;
 					if(val!=null){
 						if (val.getClass().getName().equals("String") || val.getClass().getName().equals("java.lang.String")) {
 							isCheckOk = val == null || val.toString().equals("") ? false : true;
 						}else{
 							if(val!=null){
+								if (val.getClass().getName().equals("int") || val.getClass().getName().equals("java.lang.Integer")) {
+									 //次数add
+									if(key.equals("spreadTimes")||key.equals("skipTimes")||key.startsWith("votes")){
+										isAdd = Integer.valueOf(val.toString()) ==1 ? true : false;
+									}
+								}
 								isCheckOk=true;
 							}
 						}
 					}
 					if (isCheckOk) {
-						updateSQL.append(toTableColumnName(key)).append("=#{"+SqlConstants.PARAM_NAME+".").append(key)
-						.append("},");
+						if(isAdd){
+							updateSQL.append(toTableColumnName(key)).append(" = ").append(toTableColumnName(key)).append("+1");
+						}else{
+							updateSQL.append(toTableColumnName(key)).append("=#{"+SqlConstants.PARAM_NAME+".").append(key)
+							.append("},");
+						}
 					}
 				}
 			} catch (Exception e) {

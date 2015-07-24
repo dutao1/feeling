@@ -18,6 +18,14 @@ public class EventCommentRecordDto extends BaseDto {
 	private String mobile;//手机号
 	private String nickName;//昵称
 	private Integer status;
+	private String eventCity;//城市
+	 
+	public String getEventCity() {
+		return eventCity;
+	}
+	public void setEventCity(String eventCity) {
+		this.eventCity = eventCity;
+	}
 	public Integer getUid() {
 		return uid;
 	}

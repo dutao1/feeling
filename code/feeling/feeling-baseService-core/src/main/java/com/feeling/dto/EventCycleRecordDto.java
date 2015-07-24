@@ -17,7 +17,20 @@ public class EventCycleRecordDto  extends BaseDto {
 	private Integer uid;//用户id
 	private String mobile;//手机号
 	private Integer eid; //主事件id
-	 
+	private String nickName;//昵称 
+	private String eventCity;//城市
+	public String getNickName() {
+		return nickName;
+	}
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+	public String getEventCity() {
+		return eventCity;
+	}
+	public void setEventCity(String eventCity) {
+		this.eventCity = eventCity;
+	}
 	public Integer getFromEid() {
 		return fromEid;
 	}

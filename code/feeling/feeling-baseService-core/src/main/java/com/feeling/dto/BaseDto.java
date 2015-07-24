@@ -9,8 +9,8 @@ import java.util.Date;
 public class BaseDto {
 
 	private Integer id;//主键id
-	private Float lat;//纬度
-	private Float lon;//经度
+	private Double lat;//纬度
+	private Double lon;//经度
 	private Long locationLongCode;//经纬度转换的长整形数字
 	private String deviceType;//设备类型 android ios
 	private String deviceImei;//imei号
@@ -25,16 +25,16 @@ public class BaseDto {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	public Float getLat() {
+	public Double getLat() {
 		return lat;
 	}
-	public void setLat(Float lat) {
+	public void setLat(Double lat) {
 		this.lat = lat;
 	}
-	public Float getLon() {
+	public Double getLon() {
 		return lon;
 	}
-	public void setLon(Float lon) {
+	public void setLon(Double lon) {
 		this.lon = lon;
 	}
 	public Long getLocationLongCode() {

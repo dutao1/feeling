@@ -13,14 +13,16 @@ import com.feeling.dto.EventCycleRecordDto;
  * @author dutao
  */
 public interface EventCycleRecordDao  extends  BaseDao<EventCycleRecordDto> {
+
 	/**
 	 * 获得距离最近的事件列表10条
 	 * @param uid 用户id
-	 * @param mobile 手机号
-	 * @return  List<EventCycleRecordDto>
+	 * @param mobile  手机号
+	 * @param locationLongCode
+	 * @return List<EventCycleRecordDto>
 	 */
 	@Select(SqlConstants.LIST_NEAR_EVENTS)
-	public List<EventCycleRecordDto> getNearEventList(Integer uid,String mobile);
+	public List<EventCycleRecordDto> getNearEventList(@Param("uid")Integer uid,@Param("mobile")String mobile,@Param("locationLongCode")Long locationLongCode);
 	
 	/**
 	 * 根据事件id 查询事件的流转周期
