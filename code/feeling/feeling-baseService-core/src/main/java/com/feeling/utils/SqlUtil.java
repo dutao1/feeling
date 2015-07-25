@@ -148,7 +148,10 @@ public class SqlUtil {
 							if(val!=null){
 								if (val.getClass().getName().equals("int") || val.getClass().getName().equals("java.lang.Integer")) {
 									 //次数add
-									if(key.equals("spreadTimes")||key.equals("skipTimes")||key.startsWith("votes")){
+								if( key.equals("commentTimes")||
+									key.equals("spreadTimes")||
+									key.equals("skipTimes")||
+									key.startsWith("votes")){
 										isAdd = Integer.valueOf(val.toString()) ==1 ? true : false;
 									}
 								}

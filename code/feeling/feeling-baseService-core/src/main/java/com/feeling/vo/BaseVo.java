@@ -8,6 +8,21 @@ public class BaseVo {
 	private String deviceType;//设备类型 android ios
 	private String deviceImei;//imei号
 	private String deviceId;//设备id
+	private Long locationLongCode;//经纬度转换的长整形数字
+	private String locationHash;//经纬度hash值
+	
+	public Long getLocationLongCode() {
+		return locationLongCode;
+	}
+	public void setLocationLongCode(Long locationLongCode) {
+		this.locationLongCode = locationLongCode;
+	}
+	public String getLocationHash() {
+		return locationHash;
+	}
+	public void setLocationHash(String locationHash) {
+		this.locationHash = locationHash;
+	}
 	public Double getLat() {
 		return lat;
 	}

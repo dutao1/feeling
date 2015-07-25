@@ -56,8 +56,8 @@ public class SqlConstants {
 	 * 取离最近的前10条记录
 	 */
 	public static final String LIST_NEAR_EVENTS="SELECT id"
-			        + " ,eid FROM (  SELECT id,lat,lon,location_long_code,"
-			        + " location_hash,eid,ABS(location_long_code-#{locationLongCode}) nearcode,create_time "
+			        + " ,eid,lat,lon,location_long_code,location_hash,nick_name,mobile,create_time FROM (  SELECT id,lat,lon,location_long_code,"
+			        + " location_hash,eid,ABS(location_long_code-#{locationLongCode}) nearcode,create_time,event_city,nick_name,mobile "
 			        + " FROM event_cycle_record"
 					+"  WHERE uid<>#{uid} AND mobile <>#{mobile}   LIMIT "+NEAR_LIMIT_NUMS
 					+" ) t  ORDER BY create_time DESC,nearcode ASC";

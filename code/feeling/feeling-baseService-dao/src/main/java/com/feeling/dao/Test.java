@@ -6,8 +6,11 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
 
 import com.feeling.convert.DateConverter;
+import com.feeling.dto.EventBaseDto;
 import com.feeling.dto.EventCycleRecordDto;
 import com.feeling.vo.EventCycleRecordVo;
+import com.feeling.vo.EventTextVo;
+import com.feeling.vo.UserEventVo;
 
 public class Test {
 	static {
@@ -15,12 +18,13 @@ public class Test {
 	} 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		EventCycleRecordVo eventCycleRecordVo = new EventCycleRecordVo();
-		eventCycleRecordVo.setDeviceId("adf");
-		eventCycleRecordVo.setLat(123.2);
-		EventCycleRecordDto eventCycleRecordDto=new EventCycleRecordDto();
+		EventBaseDto eventBaseDto = new EventBaseDto();
+		UserEventVo eventVo = new UserEventVo();
+		eventVo.setDeviceId("adf");
+		eventVo.setLat(123.2);
+		eventVo.setEventTextVo(new EventTextVo());
 		try {
-			BeanUtils.copyProperties(eventCycleRecordDto, eventCycleRecordVo);
+			BeanUtils.copyProperties(eventBaseDto, eventVo);
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -28,6 +32,7 @@ public class Test {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println(eventVo);
 	}
 
 }

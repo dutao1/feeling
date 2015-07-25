@@ -14,13 +14,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.feeling.dao.EventBaseDao;
-import com.feeling.dao.EventCommentRecordDao;
 import com.feeling.dao.EventCycleRecordDao;
 import com.feeling.dao.EventPicDao;
 import com.feeling.dao.EventTextDao;
 import com.feeling.dao.EventVoteDao;
 import com.feeling.dto.EventBaseDto;
-import com.feeling.dto.EventCommentRecordDto;
 import com.feeling.dto.EventCycleRecordDto;
 import com.feeling.dto.EventPicDto;
 import com.feeling.dto.EventTextDto;
@@ -29,74 +27,79 @@ import com.feeling.enums.EventTypeEnum;
 import com.feeling.enums.ReturnCodeEnum;
 import com.feeling.exception.OptException;
 import com.feeling.log.LogInfo;
-import com.feeling.vo.EventCommentRecordVo;
 import com.feeling.vo.EventCycleRecordVo;
-import com.feeling.vo.EventVo;
-
+import com.feeling.vo.EventPicVo;
+import com.feeling.vo.EventRecommendVo;
+import com.feeling.vo.EventTextVo;
+import com.feeling.vo.EventVoteVo;
+import com.feeling.vo.UserEventVo;
 
 /**
  * 
  * 事件相关操作服务
+ * 
  * @author dutao
- *
+ * 
  */
 @Service
-public class EventService extends BaseService{
-	
+public class EventService extends BaseService {
+
 	@Autowired
-	EventBaseDao eventBaseDao;//事件基本操作
+	EventBaseDao eventBaseDao;// 事件基本操作
 	@Autowired
-	EventVoteDao eventVoteDao;//投票事件操作
+	EventVoteDao eventVoteDao;// 投票事件操作
 	@Autowired
-	EventTextDao eventTextDao;//文案事件操作
+	EventTextDao eventTextDao;// 文案事件操作
 	@Autowired
-	EventPicDao eventPicDao;//图片及视频事件操作
+	EventPicDao eventPicDao;// 图片及视频事件操作
 	@Autowired
-	EventCycleRecordDao eventCycleRecordDao;//事件流转操作
-	@Autowired
-	EventCommentRecordDao eventCommentRecordDao;//事件评论操作
-	
-	
+	EventCycleRecordDao eventCycleRecordDao;// 事件流转操作
+
 	/**
 	 * 根据用户id获取事件信息
-	 * @param uid 用户id
-	 * @param limit 每页显示条数
-	 * @param offset  第几条开始
+	 * 
+	 * @param uid
+	 *            用户id
+	 * @param limit
+	 *            每页显示条数
+	 * @param offset
+	 *            第几条开始
 	 * @return List<EventVo>
 	 */
-	public List<EventVo> getUserEventByUid(Integer uid,Integer limit,Integer offset){
-		List<EventVo> listBack = null;
-		if(limit==null||offset==null){
+	public List<UserEventVo> getUserEventByUid(Integer uid, Integer limit,
+			Integer offset) {
+		List<UserEventVo> listBack = null;
+		if (limit == null || offset == null) {
 			throw new OptException(ReturnCodeEnum.EVENT_PAGE_ERROR);
 		}
-		if(uid==null){
-			throw new OptException(ReturnCodeEnum.PARAMETER_ERROR,"用户id为空");
+		if (uid == null) {
+			throw new OptException(ReturnCodeEnum.PARAMETER_ERROR, "用户id为空");
 		}
-		List<EventBaseDto> list = eventBaseDao.getEventListByUid(uid, limit, offset);
-		if(list!=null&&list.size()>0){
-		    listBack = new ArrayList<EventVo>();
-			for(EventBaseDto eventBaseDto:list){
-				EventVo eventVo = new EventVo();
-				try{
-					BeanUtils.copyProperties(eventVo, eventBaseDto);
-					listBack.add(eventVo);
-				}catch(Exception e){
+		List<EventBaseDto> list = eventBaseDao.getEventListByUid(uid, limit,
+				offset);
+		if (list != null && list.size() > 0) {
+			listBack = new ArrayList<UserEventVo>();
+			for (EventBaseDto eventBaseDto : list) {
+				try {
+					listBack.add(setUserEventDetails(eventBaseDto));
+				} catch (Exception e) {
 					LogInfo.EVENT_LOG.error(e.getMessage());
 					throw new OptException(ReturnCodeEnum.ERROR);
 				}
 			}
 		}
-		return  listBack;
+		return listBack;
 	}
-	
+
 	/**
 	 * 对投票事件进行投票，并返回投票后的结果对象
+	 * 
 	 * @param evo
 	 * @return EventVoteDto
 	 */
-	public EventVoteDto voteEvent(EventCycleRecordVo evo){
-		//更新投票信息
-		EventVoteDto edto  = new EventVoteDto();
+	public EventVoteDto voteEvent(EventVoteVo evo) {
+		// 更新投票信息
+		EventVoteDto edto = new EventVoteDto();
 		edto.setId(evo.getId());
 		edto.setVotes1(evo.getVotes1());
 		edto.setVotes2(evo.getVotes2());
@@ -105,128 +108,93 @@ public class EventService extends BaseService{
 		edto.setVotes5(evo.getVotes5());
 		edto.setVotes6(evo.getVotes6());
 		eventVoteDao.updateByPk(edto);
-		//查询
+		// 查询
 		return eventVoteDao.selectByPk(edto);
 	}
-	
-	/**
-	 * 统计评论数量
-	 * @param eid 事件id
-	 * @return int
-	 */
-	public int  countEventCommentListByEid(Integer eid){
-		return eventCommentRecordDao.countEventCommentListByEid(eid);
-	}
-	
-	/**
-	 * 通过事件id分页获得事件评论列表
-	 * @param eid 事件id
-	 * @param limit 每页显示数量
-	 * @param offset 从第几条开始
-	 */
-	public List<EventCommentRecordDto> getCommentListByEidPage(Integer eid,Integer limit ,Integer offset){
-		
-		if(limit==null||offset==null){
-			throw new OptException(ReturnCodeEnum.EVENT_PAGE_ERROR);
-		}
-		return eventCommentRecordDao.
-				getEventCommentListByEid(eid, limit, offset);
-	}
-	
-	/**
-	 * 对事件进行评论
-	 * @param eventCommentRecordVo
-	 */
-	public void toCommentEvent(EventCommentRecordVo eventCommentRecordVo){
-		if(eventCommentRecordVo!=null){
-			EventCommentRecordDto eventCommentDto = new EventCommentRecordDto();
-			try {
-				BeanUtils.copyProperties(eventCommentDto, eventCommentRecordVo);
-				eventCommentDto.setLocationLongCode(getLongGeoHash(eventCommentRecordVo.getLat(), eventCommentRecordVo.getLon()));
-				eventCommentDto.setLocationHash(getGeoHash(eventCommentRecordVo.getLat(), eventCommentRecordVo.getLon()));
-			}   catch (Exception e) {
-				LogInfo.EVENT_LOG.error(e.getMessage());
-				throw new OptException(ReturnCodeEnum.ERROR);
-			}
-			eventCommentRecordDao.insertWithOutId(eventCommentDto, 0);
-		}
-	}
+
 	/**
 	 * 根据事件id 获得事件信息
-	 * @param eid 事件id
+	 * 
+	 * @param eid
+	 *            事件id
 	 * @return EventVo
 	 */
-	public EventVo getEventInfoById(Integer eid){
+	public UserEventVo getEventInfoById(Integer eid) {
 		EventBaseDto edto = new EventBaseDto();
 		edto.setId(eid);
 		edto = eventBaseDao.selectByPk(edto);
 		try {
-			if(edto!=null){
-				EventVo  evo = new EventVo();
-				BeanUtils.copyProperties(evo, edto);
-				return evo;
+			if (edto != null) {
+				return setUserEventDetails(edto);
 			}
 		} catch (Exception e) {
 			LogInfo.EVENT_LOG.error(e.getMessage());
 			throw new OptException(ReturnCodeEnum.ERROR);
-		}  
+		}
 		return null;
 	}
+
 	/**
 	 * 转发推荐的信息
+	 * 
 	 * @param eventCycleRecordVo
 	 * @return
 	 * @throws Exception
 	 */
 	@Transactional
-	public boolean spreadEvent(EventCycleRecordVo eventCycleRecordVo) throws  Exception{
-		//插入记录
-		EventCycleRecordDto eventCycleRecordDto=new EventCycleRecordDto();
+	public boolean spreadEvent(EventCycleRecordVo eventCycleRecordVo)
+			throws Exception {
+		// 插入记录
+		EventCycleRecordDto eventCycleRecordDto = new EventCycleRecordDto();
 		BeanUtils.copyProperties(eventCycleRecordDto, eventCycleRecordVo);
-		eventCycleRecordDto.setLocationLongCode(getLongGeoHash(eventCycleRecordVo.getLat(), eventCycleRecordVo.getLon()));
-		eventCycleRecordDto.setLocationHash(getGeoHash(eventCycleRecordVo.getLat(), eventCycleRecordVo.getLon()));
+		eventCycleRecordDto.setLocationLongCode(getLongGeoHash(
+				eventCycleRecordVo.getLat(), eventCycleRecordVo.getLon()));
+		eventCycleRecordDto.setLocationHash(getGeoHash(
+				eventCycleRecordVo.getLat(), eventCycleRecordVo.getLon()));
 		eventCycleRecordDao.insertWithOutId(eventCycleRecordDto, 0);
-		//更新次数
+		// 更新次数
 		EventBaseDto eventBaseDto = new EventBaseDto();
 		eventBaseDto.setId(eventCycleRecordVo.getEid());
 		eventBaseDto.setSpreadTimes(1);
-		eventBaseDao.updateByPk(eventBaseDto) ;
+		eventBaseDao.updateByPk(eventBaseDto);
 		return true;
 	}
-	
+
 	/**
 	 * 忽略【跳过】推荐的信息
+	 * 
 	 * @param eventCycleRecordVo
 	 * @return boolean
 	 */
-	public boolean skipEvent(EventCycleRecordVo eventCycleRecordVo){
-		if(eventCycleRecordVo==null){
-			throw new OptException(ReturnCodeEnum.PARAMETER_ERROR,"无任何参数");
+	public boolean skipEvent(EventCycleRecordVo eventCycleRecordVo) {
+		if (eventCycleRecordVo == null) {
+			throw new OptException(ReturnCodeEnum.PARAMETER_ERROR, "无任何参数");
 		}
-		LogInfo.EVENT_LOG.info("skipEvent.log=="+JSONObject.fromObject(eventCycleRecordVo).toString());
-		//更新次数
+		LogInfo.EVENT_LOG.info("skipEvent.log=="
+				+ JSONObject.fromObject(eventCycleRecordVo).toString());
+		// 更新次数
 		EventBaseDto eventBaseDto = new EventBaseDto();
 		eventBaseDto.setId(eventCycleRecordVo.getEid());
 		eventBaseDto.setSkipTimes(1);
-		int result = eventBaseDao.updateByPk(eventBaseDto) ;
-		return result==1?true:false;
+		int result = eventBaseDao.updateByPk(eventBaseDto);
+		return result == 1 ? true : false;
 	}
-	
+
 	/**
 	 * 获得事件流转生命周期
+	 * 
 	 * @param eid
 	 * @return LinkedHashSet<List<EventCycleRecordDto>>
 	 */
-	public LinkedHashSet<List<EventCycleRecordDto>>  getEventCycle(Integer eid){
-		List<EventCycleRecordDto> list = 
-				eventCycleRecordDao.getEventCycleInfo(eid);
-		if(list!=null &&list.size()>0){
-			LinkedHashMap<Integer,List<EventCycleRecordDto>> hm = 
-					new LinkedHashMap<Integer,List<EventCycleRecordDto>>();
-			for(EventCycleRecordDto edto:list){
+	public LinkedHashSet<List<EventCycleRecordDto>> getEventCycle(Integer eid) {
+		List<EventCycleRecordDto> list = eventCycleRecordDao
+				.getEventCycleInfo(eid);
+		if (list != null && list.size() > 0) {
+			LinkedHashMap<Integer, List<EventCycleRecordDto>> hm = new LinkedHashMap<Integer, List<EventCycleRecordDto>>();
+			for (EventCycleRecordDto edto : list) {
 				Integer fromEid = edto.getFromEid();
 				List<EventCycleRecordDto> listOne = hm.get(fromEid);
-				if(listOne==null){
+				if (listOne == null) {
 					listOne = new ArrayList<EventCycleRecordDto>();
 				}
 				listOne.add(edto);
@@ -236,139 +204,214 @@ public class EventService extends BaseService{
 		}
 		return null;
 	}
-	
+
 	/**
 	 * 推荐事件
 	 */
-	public List<EventCycleRecordVo> recommendEvent(int uid,String mobile,double lat,double lon){
-		if(mobile==null){
+	@SuppressWarnings("static-access")
+	public List<EventRecommendVo> recommendEvent(int uid, String mobile,
+			double lat, double lon) throws Exception {
+		List<EventRecommendVo> resultList = null;
+		if (mobile == null) {
 			mobile = "";
 		}
-		//距离最近的事件信息
-		List<EventCycleRecordDto> eventList =
-				eventCycleRecordDao.getNearEventList(uid,mobile,super.getLongGeoHash(lat, lon));
-		
-		if(eventList!=null &&!eventList.isEmpty()){
-			LinkedHashMap<Integer,EventCycleRecordVo> hm = new LinkedHashMap<Integer,EventCycleRecordVo>();
-			for(EventCycleRecordDto erd:eventList){
-				EventCycleRecordVo crcleVo = new EventCycleRecordVo();
+		// 1.获取距离最近的事件信息
+		List<EventCycleRecordDto> eventList = eventCycleRecordDao
+				.getNearEventList(uid, mobile, super.getLongGeoHash(lat, lon));
+		//1.1 根据事件id 转换成map，下一步根据id列表批量查时间基本信息
+		if (eventList != null && !eventList.isEmpty()) {
+			LinkedHashMap<Integer, EventRecommendVo> hm = new LinkedHashMap<Integer, EventRecommendVo>();
+			for (EventCycleRecordDto erd : eventList) {
+				EventRecommendVo recommendVo = new EventRecommendVo();
 				Integer eid = erd.getEid();
-				if(hm.get(eid)==null){
-					crcleVo.setFromEid(erd.getId());
-					crcleVo.setEid(eid);
-					hm.put(eid, crcleVo);
+				if (hm.get(eid) == null) {
+					//添加最近一次传播相关数据到VO
+					recommendVo.setId(erd.getId());
+					recommendVo.setEid(eid);
+					recommendVo.setLat(erd.getLat());
+					recommendVo.setLon(erd.getLon());
+					recommendVo.setEventCity(erd.getEventCity());
+					recommendVo.setNickName(erd.getNickName());
+					recommendVo.setMobile(erd.getMobile());
+					recommendVo.setUpdateTime(erd.getCreateTime());
+					if(erd.getLat()!=null&&erd.getLon()!=null){
+						double dist = geoHash.getPointDistance
+									(lat, lon, erd.getLat(),erd.getLon());
+						recommendVo.setDistMeter(dist);
+						recommendVo.setDistKm(dist/1000);
+						hm.put(eid, recommendVo);
+					}
+					
 				}
 			}
-			Integer ids[] = (Integer[])hm.keySet().toArray(new Integer[hm.keySet().size()]);
+			//2.批量查事件基本信息
+			Integer ids[] = (Integer[]) hm.keySet().toArray(
+					new Integer[hm.keySet().size()]);
 			List<EventBaseDto> list = eventBaseDao.getEventListByIdList(ids);
-			if(list!=null){
-				for(EventBaseDto eventBase:list){
-					EventCycleRecordVo cycleVo = hm.get(eventBase.getId());
-					if(cycleVo!=null){
-						cycleVo.setCommentTimes(eventBase.getCommentTimes());
-						cycleVo.setSpreadTimes(eventBase.getSpreadTimes());
-						//TODO 需要确认
-						
-						
-						
-						//eventBase.set
-						//cycleVo.set
-						//eventBase.getEventCity()
-					//	cycleVo.set
+			if (list != null) {
+				for (EventBaseDto eventBase : list) {
+					EventRecommendVo recommendVo = hm.get(eventBase.getId());
+					if (recommendVo != null) {
+						//添加时间基础信息
+						recommendVo.setCommentTimes(eventBase.getCommentTimes());
+						recommendVo.setSpreadTimes(eventBase.getSpreadTimes());
+						recommendVo.setSkipTimes(eventBase.getSkipTimes());
+						recommendVo.setCreateTime(eventBase.getCreateTime());
+						recommendVo.setEventType(eventBase.getEventType());
+						UserEventVo userEventVo = setUserEventDetails(eventBase);
+						recommendVo.setEventTextVo(userEventVo.getEventTextVo());
+						recommendVo.setEventPicVo(userEventVo.getEventPicVo());
+						recommendVo.setEventVoteVo(userEventVo.getEventVoteVo());
 					}
 				}
 			}
-		}
-		else{
+			resultList = new ArrayList<EventRecommendVo>(hm.values());
+		} else {
 			throw new OptException(ReturnCodeEnum.EVENT_NO_INFO_ERROR);
 		}
-		return null;
+		return resultList;
 	}
-	
+
 	/**
 	 * 发布新事件
 	 * 
 	 * 包括 视频/图片,文案，投票
+	 * 
 	 * @param eventVo
 	 */
 	@Transactional
-	public void publishNewEvent(EventVo eventVo){
-		
-		if(eventVo==null){
-			return ;
+	public void publishNewEvent(UserEventVo eventVo) {
+
+		if (eventVo == null) {
+			return;
 		}
 		String eventType = eventVo.getEventType();
-		if(StringUtils.isEmpty(eventType)){
+		if (StringUtils.isEmpty(eventType)) {
 			throw new OptException(ReturnCodeEnum.EVENT_TYPE_EMPTY_ERROR);
 		}
-		 EventBaseDto eventBaseDto = new EventBaseDto();
-		 Integer eventId = null;
-		 try {
+		EventBaseDto eventBaseDto = new EventBaseDto();
+		Integer eventId = null;
+		try {
 			BeanUtils.copyProperties(eventBaseDto, eventVo);
-			eventBaseDto.setLocationLongCode(getLongGeoHash(eventBaseDto.getLat(), eventBaseDto.getLon()));
-			eventBaseDto.setLocationHash(getGeoHash(eventBaseDto.getLat(), eventBaseDto.getLon()));
-			//1 插入事件基本表
+			eventBaseDto.setLocationLongCode(getLongGeoHash(
+					eventBaseDto.getLat(), eventBaseDto.getLon()));
+			eventBaseDto.setLocationHash(getGeoHash(eventBaseDto.getLat(),
+					eventBaseDto.getLon()));
+			// 1 插入事件基本表
 			eventBaseDao.insertWithId(eventBaseDto);
 			eventId = eventBaseDto.getId();
-			if(eventId==null){
-				LogInfo.EVENT_LOG.error(ReturnCodeEnum.EVENT_PUBLISH_ERROR.getMessage());
+			if (eventId == null) {
+				LogInfo.EVENT_LOG.error(ReturnCodeEnum.EVENT_PUBLISH_ERROR
+						.getMessage());
 				throw new OptException(ReturnCodeEnum.EVENT_PUBLISH_ERROR);
 			}
-			//2.事件分支表
-			insertEventDetailInfo(eventVo,eventId);
-			//3.事件流转信息表
+			// 2.事件分支表
+			insertEventDetailInfo(eventVo, eventId);
+			// 3.事件流转信息表
 			EventCycleRecordDto eCycleDto = new EventCycleRecordDto();
 			BeanUtils.copyProperties(eCycleDto, eventBaseDto);
-			eCycleDto.setFromEid(0);//初始化0
+			eCycleDto.setFromEid(0);// 初始化0
 			eCycleDto.setEid(eventId);
 			eventCycleRecordDao.insertWithOutId(eCycleDto, 0);
 		} catch (Exception e) {
 			LogInfo.EVENT_LOG.error(e.getMessage());
 			throw new OptException(ReturnCodeEnum.ERROR);
-		}  
+		}
 	}
-	
+
 	/**
 	 * 插入事件基础信息
-	 * @param eventVo 事件信息
-	 * @param eventId 事件id
+	 * 
+	 * @param eventVo
+	 *            事件信息
+	 * @param eventId
+	 *            事件id
 	 * @throws Exception
 	 */
-	public void insertEventDetailInfo(EventVo eventVo,Integer eventId) throws Exception{
-		String eventType = eventVo.getEventType(); 
-		//文本事件
-		if(eventType.equals(EventTypeEnum.TEXT.getName())){
+	public void insertEventDetailInfo(UserEventVo eventVo, Integer eventId)
+			throws Exception {
+		String eventType = eventVo.getEventType();
+		// 文本事件
+		if (eventType.equals(EventTypeEnum.TEXT.getName())) {
+			if (eventVo.getEventTextVo() == null) {
+				throw new OptException(ReturnCodeEnum.PARAMETER_ERROR);
+			}
 			EventTextDto eventTextDto = new EventTextDto();
 			eventTextDto.setEid(eventId);
 			eventTextDto.setUid(eventVo.getUid());
-			eventTextDto.setContent(eventVo.getContent());
+			eventTextDto.setContent(eventVo.getEventTextVo().getContent());
 			eventTextDao.insertWithOutId(eventTextDto, 0);
-			
+
 		}
-		//投票事件
-		else if(eventType.equals(EventTypeEnum.VOTE.getName())){
+		// 投票事件
+		else if (eventType.equals(EventTypeEnum.VOTE.getName())) {
+			EventVoteVo voteVo = eventVo.getEventVoteVo();
+			if (voteVo == null) {
+				throw new OptException(ReturnCodeEnum.PARAMETER_ERROR);
+			}
 			EventVoteDto eventVoteDto = new EventVoteDto();
 			eventVoteDto.setEid(eventId);
 			eventVoteDto.setUid(eventVo.getUid());
-			eventVoteDto.setVoteType(eventVo.getVoteType());
-			eventVoteDto.setTitle(eventVo.getTitle());
-			eventVoteDto.setOption1(eventVo.getOption1());
-			eventVoteDto.setOption2(eventVo.getOption2());
-			eventVoteDto.setOption3(eventVo.getOption3());
-			eventVoteDto.setOption4(eventVo.getOption4());
-			eventVoteDto.setOption5(eventVo.getOption5());
-			eventVoteDto.setOption6(eventVo.getOption6());
+			eventVoteDto.setVoteType(voteVo.getVoteType());
+			eventVoteDto.setTitle(voteVo.getTitle());
+			eventVoteDto.setOption1(voteVo.getOption1());
+			eventVoteDto.setOption2(voteVo.getOption2());
+			eventVoteDto.setOption3(voteVo.getOption3());
+			eventVoteDto.setOption4(voteVo.getOption4());
+			eventVoteDto.setOption5(voteVo.getOption5());
+			eventVoteDto.setOption6(voteVo.getOption6());
 			eventVoteDao.insertWithOutId(eventVoteDto, 0);
 		}
-		//其他事件
-		else{
+		// 其他事件
+		else {
+			EventPicVo picVo = eventVo.getEventPicVo();
+			if (picVo == null) {
+				throw new OptException(ReturnCodeEnum.PARAMETER_ERROR);
+			}
 			EventPicDto eventPicDto = new EventPicDto();
 			eventPicDto.setEid(eventId);
-			eventPicDto.setPicPath(eventVo.getPicPath());
-			eventPicDto.setPicType(eventVo.getPicType());
-			eventPicDto.setRemark(eventVo.getRemark());
+			eventPicDto.setPicPath(picVo.getPicPath());
+			eventPicDto.setPicType(picVo.getPicType());
+			eventPicDto.setRemark(picVo.getRemark());
 			eventPicDto.setUid(eventVo.getUid());
 			eventPicDao.insertWithOutId(eventPicDto, 0);
 		}
+	}
+
+	/**
+	 * 通过事件基础信息获得事件相关细节数据
+	 * 
+	 * @param eventBaseDto
+	 * @return UserEventVo
+	 * @throws Exception
+	 */
+	private UserEventVo setUserEventDetails(EventBaseDto eventBaseDto)
+			throws Exception {
+		UserEventVo eventVo = new UserEventVo();
+		BeanUtils.copyProperties(eventVo, eventBaseDto);
+		if (eventVo.getEventType().equals(EventTypeEnum.TEXT.getName())) {
+			EventTextDto edto = eventTextDao.getEventByEid(eventVo.getId());
+			if (edto != null) {
+				EventTextVo eventTextVo = new EventTextVo();
+				BeanUtils.copyProperties(eventTextVo, edto);
+				eventVo.setEventTextVo(eventTextVo);
+			}
+
+		} else if (eventVo.getEventType().equals(EventTypeEnum.VOTE.getName())) {
+			EventVoteDto edto = eventVoteDao.getEventByEid(eventVo.getId());
+			if (edto != null) {
+				EventVoteVo eventVoteVo = new EventVoteVo();
+				BeanUtils.copyProperties(eventVoteVo, edto);
+				eventVo.setEventVoteVo(eventVoteVo);
+			}
+		} else {
+			EventPicDto edto = eventPicDao.getEventByEid(eventVo.getId());
+			if (edto != null) {
+				EventPicVo eventPicVo = new EventPicVo();
+				BeanUtils.copyProperties(eventPicVo, edto);
+				eventVo.setEventPicVo(eventPicVo);
+			}
+		}
+		return eventVo;
 	}
 }
