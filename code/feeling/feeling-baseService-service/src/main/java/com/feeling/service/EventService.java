@@ -54,7 +54,19 @@ public class EventService extends BaseService {
 	EventPicDao eventPicDao;// 图片及视频事件操作
 	@Autowired
 	EventCycleRecordDao eventCycleRecordDao;// 事件流转操作
-
+	
+	/**
+	 * 查询用id 发布的事件数量
+	 * @param uid 用户id
+	 * @return int
+	 */
+	public int countEventListByUid(Integer uid){
+		if (uid == null) {
+			throw new OptException(ReturnCodeEnum.PARAMETER_ERROR, "用户id为空");
+		}
+		return eventBaseDao.countEventListByUid(uid);
+	}
+	
 	/**
 	 * 根据用户id获取事件信息
 	 * 
@@ -328,7 +340,7 @@ public class EventService extends BaseService {
 	 *            事件id
 	 * @throws Exception
 	 */
-	public void insertEventDetailInfo(UserEventVo eventVo, Integer eventId)
+	private void insertEventDetailInfo(UserEventVo eventVo, Integer eventId)
 			throws Exception {
 		String eventType = eventVo.getEventType();
 		// 文本事件
