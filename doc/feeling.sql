@@ -106,13 +106,12 @@ CREATE TABLE `event_pic` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `eid` int(11) NOT NULL COMMENT '事件ID',
   `uid` int(11) DEFAULT '0' COMMENT '用户编号',
-  `pic_path` varchar(64) NOT NULL COMMENT '图片相对路径',
+  `pic_path` varchar(256) NOT NULL COMMENT '图片相对路径',
   `pic_type` varchar(8) NOT NULL COMMENT '图片类型：jpg|jpeg|png|gif',
   `remark` varchar(64) DEFAULT NULL COMMENT '图片说明',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `eid` (`eid`),
   KEY `i_uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='图片事件表';
 
@@ -170,7 +169,7 @@ CREATE TABLE `user_base_info` (
   `mobile` varchar(16) DEFAULT NULL COMMENT '手机号',
   `nick_name` varchar(32) DEFAULT NULL COMMENT '昵称(唯一且不能修改)',
   `gender` tinyint(2) DEFAULT '0' COMMENT '性别 0:女  1：男',
-  `pwd` varchar(64) DEFAULT NULL COMMENT '密码 MD5+Salt',
+  `pwd` varchar(64) NOT NULL COMMENT '密码 MD5+Salt',
   `city_code` varchar(128) DEFAULT NULL COMMENT '城市编码',
   `birthday` date DEFAULT NULL COMMENT '生日',
   `avatar` varchar(64) DEFAULT NULL COMMENT '头像相对路径',
@@ -180,7 +179,7 @@ CREATE TABLE `user_base_info` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `nick_name` (`nick_name`),
   KEY `mobile` (`mobile`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用户信息';
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COMMENT='用户信息';
 
 /*Table structure for table `user_locus_info` */
 
@@ -190,10 +189,10 @@ CREATE TABLE `user_locus_info` (
   `id` int(4) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水号',
   `uid` int(11) NOT NULL DEFAULT '0' COMMENT '用户编号',
   `locus_type` tinyint(2) NOT NULL DEFAULT '1' COMMENT '类型（0:注册 1：登录,2修改密码 ）',
-  `lat` double NOT NULL DEFAULT '0' COMMENT '纬度',
-  `lon` double NOT NULL DEFAULT '0' COMMENT '经度',
-  `location_long_code` bigint(8) NOT NULL DEFAULT '0' COMMENT '长整型坐标',
-  `device_type` varchar(16) NOT NULL COMMENT 'android|ios',
+  `lat` double DEFAULT '0' COMMENT '纬度',
+  `lon` double DEFAULT '0' COMMENT '经度',
+  `location_long_code` bigint(8) DEFAULT '0' COMMENT '长整型坐标',
+  `device_type` varchar(16) DEFAULT NULL COMMENT 'android|ios',
   `device_imei` varchar(64) DEFAULT NULL COMMENT 'imei号',
   `device_id` varchar(64) DEFAULT NULL COMMENT '设备编号',
   `create_time` datetime NOT NULL COMMENT '创建时间',
@@ -202,7 +201,7 @@ CREATE TABLE `user_locus_info` (
   `city_code` varchar(128) DEFAULT NULL COMMENT '城市',
   PRIMARY KEY (`id`),
   KEY `i_uid` (`uid`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用户行为轨迹表';
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='用户行为轨迹表';
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
