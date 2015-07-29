@@ -1,5 +1,7 @@
 package com.feeling.vo;
 
+import com.feeling.annotation.NotEmpty;
+
 public class EventVo extends BaseVo{
 
 	private Integer id;                     // 主键

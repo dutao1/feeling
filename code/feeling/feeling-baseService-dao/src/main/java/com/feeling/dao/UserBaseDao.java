@@ -20,6 +20,9 @@ public interface UserBaseDao  extends  BaseDao<UserBaseDto>{
 	public void insertWithId(UserBaseDto userBaseDto);
 	
 	@Select(SqlConstants.CHECK_PWD_SQL)
-	public UserBaseDto checkPwd(@Param("nickName")String nickName,@Param("pwd")String pwd);
+	public UserBaseDto checkPwd(@Param("uid")Integer uid,@Param("pwd")String pwd);
+	
+	@Select(SqlConstants.CHECK_PWD_BYNAME_SQL)
+	public UserBaseDto checkPwdByName(@Param("name")String name,@Param("pwd")String pwd);
 	
 }

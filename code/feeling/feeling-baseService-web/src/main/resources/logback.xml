@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- @version $Id$ -->
+<!--
+  - Logback配置文件。
+-->
+<configuration scan="false" scanPeriod="120 seconds" debug="false">
+	<!-- logger上下文 -->
+	<contextName>FeelingLog</contextName>
+	<property resource="log.properties" />
+	
+	<!-- ===================================================================== -->
+	<!-- Appenders                                                             -->
+	<!-- ===================================================================== -->
+	<!-- ===== [公共Appender] ===== -->
+	<!-- [公共Appender] 默认 -->
+	<appender name="DEFAULT-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOGGING_ROOT}/default.log</file>
+		<append>true</append>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- 日志文件输出的文件名 -->
+			<FileNamePattern>${LOGGING_ROOT}/backup/default.log.%d{yyyyMMdd}</FileNamePattern>
+			<MaxHistory>20</MaxHistory>
+		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c - [%m]%n</pattern>
+		</encoder>
+	</appender>
+	<appender name="WEB-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOGGING_ROOT}/web.log</file>
+		<append>true</append>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- 日志文件输出的文件名 -->
+			<FileNamePattern>${LOGGING_ROOT}/backup/web.log.%d{yyyyMMdd}</FileNamePattern>
+			<MaxHistory>30</MaxHistory>
+		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c - [%m]%n</pattern>
+		</encoder>
+	</appender>
+	<appender name="USER_SERVICE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOGGING_ROOT}/user_service.log</file>
+		<append>true</append>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- 日志文件输出的文件名 -->
+			<FileNamePattern>${LOGGING_ROOT}/backup/user_service.log.%d{yyyyMMdd}</FileNamePattern>
+			<MaxHistory>30</MaxHistory>
+		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c - [%m]%n</pattern>
+		</encoder>
+	</appender>
+	<appender name="EVENT_SERVICE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOGGING_ROOT}/event_service.log</file>
+		<append>true</append>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- 日志文件输出的文件名 -->
+			<FileNamePattern>${LOGGING_ROOT}/backup/event_service.log.%d{yyyyMMdd}</FileNamePattern>
+			<MaxHistory>30</MaxHistory>
+		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c - [%m]%n</pattern>
+		</encoder>
+	</appender>
+	
+	<!-- [公共Appender] 汇总错误 -->
+	<appender name="ERROR-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOGGING_ROOT}/error.log</file> 
+    	<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+    		<level>ERROR</level>
+    	</filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      		<fileNamePattern>${LOGGING_ROOT}/backup/error.log.%d{yyyyMMdd}</fileNamePattern>
+      		<maxHistory>20</maxHistory>
+    	</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c - [%m]%n</pattern>
+		</encoder>
+	</appender>
+	<!-- [公共Appender] 控制台STDOUT -->
+	<appender name="STDOUT-APPENDER" class="ch.qos.logback.core.ConsoleAppender">
+		<param name="target" value="System.out"/>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c - [%m]%n</pattern>
+		</encoder>
+	</appender>
+	<!-- [公共Appender] 控制台STDERR -->
+	<appender name="STDERR-APPENDER" class="ch.qos.logback.core.ConsoleAppender">
+		<param name="target" value="System.err"/>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c - [%m]%n</pattern>
+		</encoder>
+	</appender>
+	<!-- [公共Appender] 数据访问层 -->
+	<appender name="DAO-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOGGING_ROOT}/dao.log</file>
+    	<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+	      	<fileNamePattern>${LOGGING_ROOT}/backup/dao.log.%i</fileNamePattern>
+	      	<minIndex>1</minIndex>
+	      	<maxIndex>5</maxIndex>
+	    </rollingPolicy>
+		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+          	<maxFileSize>100MB</maxFileSize>
+        </triggeringPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c - [%m]%n</pattern>
+		</encoder>
+	</appender>
+  	
+	<!-- [公共Logger] 控制台STDOUT - STDOUT -->
+	<logger name="STDOUT" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="STDOUT-APPENDER"/>
+	</logger>
+	<!-- [公共Logger] 控制台STDERR - STDERR -->
+	<logger name="STDERR" additivity="false">
+		<level value="ERROR"/>
+		<appender-ref ref="STDERR-APPENDER"/>
+	</logger>
+	<!-- ===== [框架Logger] ===== -->
+	<!-- [框架Logger] 数据访问层 - Hibernate -->
+	<logger name="org.mybatis" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="DAO-APPENDER"/>
+		<appender-ref ref="ERROR-APPENDER"/>
+	</logger>
+	<!-- [框架Logger] 数据访问层 - SQL -->
+	<logger name="java.sql" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="DAO-APPENDER"/>
+		<appender-ref ref="ERROR-APPENDER"/>
+	</logger>
+	<!-- [应用Logger]  -->
+	<logger name="WEB.LOG" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="WEB-APPENDER"/>
+	</logger>
+	 <logger name="USER_SERVICE.LOG" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="USER_SERVICE-APPENDER"/>
+	</logger>
+	<logger name="EVENT_SERVICE.LOG" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="EVENT_SERVICE-APPENDER"/>
+	</logger>
+	
+	<!-- ===================================================================== -->
+	<!-- Root logger                                                           -->
+	<!-- ===================================================================== -->
+	<root level="INFO">
+		 <appender-ref ref="DEFAULT-APPENDER"/>
+		<appender-ref ref="WEB-APPENDER"/>
+		<appender-ref ref="USER_SERVICE-APPENDER"/>
+		<appender-ref ref="EVENT_SERVICE-APPENDER"/> -->
+		<appender-ref ref="STDERR-APPENDER"/>
+		<appender-ref ref="STDOUT-APPENDER"/>
+		<appender-ref ref="DAO-APPENDER"/>
+		<appender-ref ref="ERROR-APPENDER"/>
+	</root>
+</configuration>

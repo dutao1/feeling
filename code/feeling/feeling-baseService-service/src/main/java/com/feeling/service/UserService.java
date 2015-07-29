@@ -3,7 +3,9 @@ package com.feeling.service;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +18,6 @@ import com.feeling.enums.UserLocusEnum;
 import com.feeling.enums.UserStatusEnum;
 import com.feeling.exception.OptException;
 import com.feeling.utils.CryptUtil;
-import com.feeling.utils.Geohash;
 import com.feeling.vo.UserVo;
 
 /**
@@ -39,10 +40,10 @@ public class UserService extends BaseService{
 	 */
 	public boolean updateUserInfo(UserVo uvo){
 		
-		UserBaseDto userBaseDto = new UserBaseDto();
-		try {
-			if(userBaseDto==null||userBaseDto.getId()==null){
-				throw new OptException(ReturnCodeEnum.NO_USER_ERROR);
+		UserBaseDto userBaseDto  = new UserBaseDto();
+		try { 
+			if(uvo==null||uvo.getId()==null){
+				throw new OptException(ReturnCodeEnum.NO_LOGIN_ERROR);
 			}
 			BeanUtils.copyProperties(userBaseDto, uvo);
 			int result = userBaseDao.updateByPk(userBaseDto);
@@ -65,12 +66,19 @@ public class UserService extends BaseService{
 	 * @param newPwd
 	 * @return boolean
 	 */ 
-	public boolean modifyPwd(String nickName,String oldPwd,String newPwd){
+	public boolean modifyPwd(Integer uid,String oldPwd,String newPwd){
+		if(uid!=null){
+			throw new OptException(ReturnCodeEnum.NO_LOGIN_ERROR);
+		}
+		if(StringUtils.isEmpty(oldPwd)||
+				StringUtils.isEmpty(newPwd)){
+			throw new OptException(ReturnCodeEnum.PWD_MODIFY_INPUT_ERROR);
+		}
 		if(oldPwd!=null &&oldPwd.equals(newPwd)){
 			throw new OptException(ReturnCodeEnum.PWD_NO_MODIFY_ERROR);
 		}
 		String pwd = CryptUtil.encrypt(oldPwd);
-		UserBaseDto userBaseDto = userBaseDao.checkPwd(nickName, pwd);
+		UserBaseDto userBaseDto = userBaseDao.checkPwd(uid, pwd);
 		if(userBaseDto!=null){
 			userBaseDto.setPwd(CryptUtil.encrypt(newPwd));
 			int result = userBaseDao.updateByPk(userBaseDto);
@@ -92,7 +100,7 @@ public class UserService extends BaseService{
 			return null;
 		}
 		String pwd = CryptUtil.encrypt(uvo.getPwd());
-		UserBaseDto userBaseDto = userBaseDao.checkPwd(uvo.getNickName(), pwd);
+		UserBaseDto userBaseDto = userBaseDao.checkPwdByName(uvo.getNickName(), pwd);
 		if(userBaseDto!=null){
 			insertUserLocus(uvo,userBaseDto.getId(),UserLocusEnum.LOGIN.getCode());
 		}else{
@@ -121,11 +129,14 @@ public class UserService extends BaseService{
 				userBaseDao.insertWithId(userBaseDto);
 				uid=userBaseDto.getId();
 				insertUserLocus(uvo,uid,UserLocusEnum.REG.getCode());
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			}
+			} catch (Exception e) {
+				if(e instanceof DuplicateKeyException){
+					throw new OptException(ReturnCodeEnum.USER_NAME_DUPLICATEKSY_ERROR, userBaseDto.getNickName());
+				}else{
+					e.printStackTrace();
+				}
+				
+			}  
 		}
 		return uid;
 	}

@@ -221,15 +221,15 @@ public class EventService extends BaseService {
 	 * 推荐事件
 	 */
 	@SuppressWarnings("static-access")
-	public List<EventRecommendVo> recommendEvent(int uid, String mobile,
+	public List<EventRecommendVo> recommendEvent(int uid, String deviceId,
 			double lat, double lon) throws Exception {
 		List<EventRecommendVo> resultList = null;
-		if (mobile == null) {
-			mobile = "";
+		if (deviceId == null) {
+			deviceId = "";
 		}
 		// 1.获取距离最近的事件信息
 		List<EventCycleRecordDto> eventList = eventCycleRecordDao
-				.getNearEventList(uid, mobile, super.getLongGeoHash(lat, lon));
+				.getNearEventList(uid, deviceId, super.getLongGeoHash(lat, lon));
 		//1.1 根据事件id 转换成map，下一步根据id列表批量查时间基本信息
 		if (eventList != null && !eventList.isEmpty()) {
 			LinkedHashMap<Integer, EventRecommendVo> hm = new LinkedHashMap<Integer, EventRecommendVo>();
@@ -240,20 +240,8 @@ public class EventService extends BaseService {
 					//添加最近一次传播相关数据到VO
 					recommendVo.setId(erd.getId());
 					recommendVo.setEid(eid);
-					recommendVo.setLat(erd.getLat());
-					recommendVo.setLon(erd.getLon());
-					recommendVo.setEventCity(erd.getEventCity());
-					recommendVo.setNickName(erd.getNickName());
-					recommendVo.setMobile(erd.getMobile());
 					recommendVo.setUpdateTime(erd.getCreateTime());
-					if(erd.getLat()!=null&&erd.getLon()!=null){
-						double dist = geoHash.getPointDistance
-									(lat, lon, erd.getLat(),erd.getLon());
-						recommendVo.setDistMeter(dist);
-						recommendVo.setDistKm(dist/1000);
-						hm.put(eid, recommendVo);
-					}
-					
+					hm.put(eid, recommendVo);
 				}
 			}
 			//2.批量查事件基本信息
@@ -270,10 +258,23 @@ public class EventService extends BaseService {
 						recommendVo.setSkipTimes(eventBase.getSkipTimes());
 						recommendVo.setCreateTime(eventBase.getCreateTime());
 						recommendVo.setEventType(eventBase.getEventType());
+						recommendVo.setLat(eventBase.getLat());
+						recommendVo.setLon(eventBase.getLon());
+						recommendVo.setEventCity(eventBase.getEventCity());
+						recommendVo.setNickName(eventBase.getNickName());
+						recommendVo.setMobile(eventBase.getMobile());
+						recommendVo.setCreateTime(eventBase.getCreateTime());
+						if(eventBase.getLat()!=null&&eventBase.getLon()!=null){
+							double dist = geoHash.getPointDistance
+										(lat, lon, eventBase.getLat(),eventBase.getLon());
+							recommendVo.setDistMeter(dist);
+							recommendVo.setDistKm(dist/1000);
+						}
 						UserEventVo userEventVo = setUserEventDetails(eventBase);
 						recommendVo.setEventTextVo(userEventVo.getEventTextVo());
-						recommendVo.setEventPicVo(userEventVo.getEventPicVo());
+						recommendVo.setEventPicVos(userEventVo.getEventPicVos());
 						recommendVo.setEventVoteVo(userEventVo.getEventVoteVo());
+						hm.put(eventBase.getId(), recommendVo);
 					}
 				}
 			}
@@ -310,6 +311,17 @@ public class EventService extends BaseService {
 			eventBaseDto.setLocationHash(getGeoHash(eventBaseDto.getLat(),
 					eventBaseDto.getLon()));
 			// 1 插入事件基本表
+			Integer uid = eventBaseDto.getUid();
+			//游客的昵称是 deviceid 后6位
+			if(uid==null){
+				String deviceId = eventBaseDto.getDeviceId();
+				if(StringUtils.isNotEmpty(deviceId)){
+					if(deviceId.length()>6){
+						deviceId = deviceId.substring(deviceId.length()-6);
+					}
+					eventBaseDto.setNickName(deviceId);
+				}
+			}
 			eventBaseDao.insertWithId(eventBaseDto);
 			eventId = eventBaseDto.getId();
 			if (eventId == null) {
@@ -345,8 +357,9 @@ public class EventService extends BaseService {
 		String eventType = eventVo.getEventType();
 		// 文本事件
 		if (eventType.equals(EventTypeEnum.TEXT.getName())) {
-			if (eventVo.getEventTextVo() == null) {
-				throw new OptException(ReturnCodeEnum.PARAMETER_ERROR);
+			if (eventVo.getEventTextVo() == null 
+		||StringUtils.isEmpty(eventVo.getEventTextVo().getContent())) {
+				throw new OptException(ReturnCodeEnum.PARAMETER_ERROR,"文字信息为空");
 			}
 			EventTextDto eventTextDto = new EventTextDto();
 			eventTextDto.setEid(eventId);
@@ -358,8 +371,10 @@ public class EventService extends BaseService {
 		// 投票事件
 		else if (eventType.equals(EventTypeEnum.VOTE.getName())) {
 			EventVoteVo voteVo = eventVo.getEventVoteVo();
-			if (voteVo == null) {
-				throw new OptException(ReturnCodeEnum.PARAMETER_ERROR);
+			if (voteVo == null ||
+					voteVo.getVoteType()==null ||
+					StringUtils.isEmpty(voteVo.getTitle())) {
+				throw new OptException(ReturnCodeEnum.PARAMETER_ERROR,"投票信息为空");
 			}
 			EventVoteDto eventVoteDto = new EventVoteDto();
 			eventVoteDto.setEid(eventId);
@@ -376,17 +391,19 @@ public class EventService extends BaseService {
 		}
 		// 其他事件
 		else {
-			EventPicVo picVo = eventVo.getEventPicVo();
-			if (picVo == null) {
-				throw new OptException(ReturnCodeEnum.PARAMETER_ERROR);
+			List<EventPicVo> picVos = eventVo.getEventPicVos();
+			if (picVos == null||picVos.size()<1) {
+				throw new OptException(ReturnCodeEnum.PARAMETER_ERROR,"至少上传一个文件");
 			}
-			EventPicDto eventPicDto = new EventPicDto();
-			eventPicDto.setEid(eventId);
-			eventPicDto.setPicPath(picVo.getPicPath());
-			eventPicDto.setPicType(picVo.getPicType());
-			eventPicDto.setRemark(picVo.getRemark());
-			eventPicDto.setUid(eventVo.getUid());
-			eventPicDao.insertWithOutId(eventPicDto, 0);
+			for(EventPicVo epic:picVos){
+				EventPicDto eventPicDto = new EventPicDto();
+				eventPicDto.setEid(eventId);
+				eventPicDto.setPicPath(epic.getPicPath());
+				eventPicDto.setPicType(epic.getPicType());
+				eventPicDto.setRemark(epic.getRemark());
+				eventPicDto.setUid(eventVo.getUid());
+				eventPicDao.insertWithOutId(eventPicDto, 0);
+			}
 		}
 	}
 
@@ -417,11 +434,14 @@ public class EventService extends BaseService {
 				eventVo.setEventVoteVo(eventVoteVo);
 			}
 		} else {
-			EventPicDto edto = eventPicDao.getEventByEid(eventVo.getId());
-			if (edto != null) {
-				EventPicVo eventPicVo = new EventPicVo();
-				BeanUtils.copyProperties(eventPicVo, edto);
-				eventVo.setEventPicVo(eventPicVo);
+			List<EventPicDto> edtos = eventPicDao.getEventByEid(eventVo.getId());
+			if (edtos != null) {
+				List<EventPicVo> ePicVos = new ArrayList<EventPicVo>();
+				for(EventPicDto edto:edtos){
+					EventPicVo eventPicVo = new EventPicVo();
+					BeanUtils.copyProperties(eventPicVo, edto);
+					ePicVos.add(eventPicVo);
+				}
 			}
 		}
 		return eventVo;

@@ -1,4 +1,7 @@
 package com.feeling.vo;
+
+import com.feeling.annotation.NotEmpty;
+import com.feeling.annotation.NotNull;
  
 
 /**
@@ -9,7 +12,9 @@ package com.feeling.vo;
 public class EventCommentRecordVo   extends BaseVo  {
 
 	private Integer uid;//用户id
+	@NotNull
 	private Integer eid; //主事件id
+	@NotEmpty(maxLength = 300, minLength = 1)
 	private String comment;//评论
 	private Integer isDisplay;//是否显示
 	private String mobile;//手机号

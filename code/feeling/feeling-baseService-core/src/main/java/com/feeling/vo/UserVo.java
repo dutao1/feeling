@@ -2,6 +2,9 @@ package com.feeling.vo;
 
 import java.util.Date;
 
+import com.feeling.annotation.NotEmpty;
+import com.feeling.annotation.NotNull;
+
 
 /**
  * 用户vo
@@ -12,8 +15,11 @@ public class UserVo  extends BaseVo{
 
 	private Integer id;                     // 主键
 	private String mobile;//手机号
-	private String  nickName; //昵称
+	@NotEmpty(minLength=3,maxLength=9)
+	private String  nickName; //昵称or用户名
+	@NotNull
 	private Integer gender;//性别 0:女  1：男
+	@NotEmpty(minLength=6,maxLength=9)
 	private String pwd;//密码 加密后的
 	private String cityCode;//城市代码
 	private Date birthday;//生日

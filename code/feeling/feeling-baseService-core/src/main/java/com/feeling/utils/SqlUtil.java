@@ -145,23 +145,29 @@ public class SqlUtil {
 						if (val.getClass().getName().equals("String") || val.getClass().getName().equals("java.lang.String")) {
 							isCheckOk = val == null || val.toString().equals("") ? false : true;
 						}else{
-							if(val!=null){
-								if (val.getClass().getName().equals("int") || val.getClass().getName().equals("java.lang.Integer")) {
-									 //次数add
-								if( key.equals("commentTimes")||
-									key.equals("spreadTimes")||
-									key.equals("skipTimes")||
-									key.startsWith("votes")){
-										isAdd = Integer.valueOf(val.toString()) ==1 ? true : false;
-									}
-								}
-								isCheckOk=true;
+							if(val.toString().equals("0")){
+								continue;
 							}
-						}
+							if (val.getClass().getName().equals("int") || 
+									val.getClass().getName().equals("java.lang.Integer")) {
+								if(key.equals(pkName)){
+									isCheckOk=false;
+								}else{
+									//次数add
+									if( key.equals("commentTimes")||
+											key.equals("spreadTimes")||
+											key.equals("skipTimes")||
+											key.startsWith("votes")){
+												isAdd = Integer.valueOf(val.toString()) ==1 ? true : false;
+											}
+									isCheckOk=true;
+								}
+							}
+						 }
 					}
 					if (isCheckOk) {
 						if(isAdd){
-							updateSQL.append(toTableColumnName(key)).append(" = ").append(toTableColumnName(key)).append("+1");
+							updateSQL.append(toTableColumnName(key)).append(" = ").append(toTableColumnName(key)).append("+1").append(",");
 						}else{
 							updateSQL.append(toTableColumnName(key)).append("=#{"+SqlConstants.PARAM_NAME+".").append(key)
 							.append("},");
@@ -172,7 +178,11 @@ public class SqlUtil {
 				e.printStackTrace();
 			}
 		}
-		mainSql.append("update ").append(tablename).append(" set ").append(updateSQL.toString())
+		String uptSql = updateSQL.toString();
+		if(uptSql!=null&&uptSql.endsWith(",")){
+			uptSql = uptSql.substring(0, uptSql.length()-1);
+		}
+		mainSql.append("update ").append(tablename).append(" set ").append(uptSql)
 		.append(" where "+toTableColumnName(pkName)+"=#{"+SqlConstants.PARAM_NAME+"."+pkName+"} ");
 		return mainSql.toString();
 	}

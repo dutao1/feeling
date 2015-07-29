@@ -1,6 +1,7 @@
 package com.feeling.vo;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 推荐事件vo
@@ -21,12 +22,18 @@ public class EventRecommendVo extends BaseVo{
 	private Integer spreadTimes;//转发次数
 	private Integer skipTimes;//忽略次数
 	private Integer commentTimes;//评论次数
-	private EventPicVo eventPicVo;//图片/视频 vo
+	private String   remark;//只有图片才有
+	private List<EventPicVo> eventPicVos;//图片/视频 vo
 	private EventVoteVo eventVoteVo;//投票vo
 	private EventTextVo eventTextVo;//文案vo
 	private Double distMeter;//相距多少米
 	private Double distKm;// 相距多少公里
-	
+	public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
 	public Double getDistMeter() {
 		return distMeter;
 	}
@@ -111,11 +118,12 @@ public class EventRecommendVo extends BaseVo{
 	public void setCommentTimes(Integer commentTimes) {
 		this.commentTimes = commentTimes;
 	}
-	public EventPicVo getEventPicVo() {
-		return eventPicVo;
+	 
+	public List<EventPicVo> getEventPicVos() {
+		return eventPicVos;
 	}
-	public void setEventPicVo(EventPicVo eventPicVo) {
-		this.eventPicVo = eventPicVo;
+	public void setEventPicVos(List<EventPicVo> eventPicVos) {
+		this.eventPicVos = eventPicVos;
 	}
 	public EventVoteVo getEventVoteVo() {
 		return eventVoteVo;

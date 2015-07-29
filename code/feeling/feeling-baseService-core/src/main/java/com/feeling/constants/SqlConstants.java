@@ -48,10 +48,15 @@ public class SqlConstants {
 	
 	
 	/**
-	 * 根据用户昵称和密码查询是否存在用户
+	 * 根据用户id和密码查询是否存在用户
 	 */
-	public static final String CHECK_PWD_SQL = "select id,avatar,status,mobile from "+USER_BASE_TABLE+" where nick_name=#{nickName} and pwd=#{pwd} limit 1" ;
+	public static final String CHECK_PWD_SQL = "select id,avatar,status,mobile from "+USER_BASE_TABLE+" where id=#{uid} and pwd=#{pwd} limit 1" ;
 
+	/**
+	 * 根据用户名和密码查询是否存在用户
+	 */
+	public static final String CHECK_PWD_BYNAME_SQL = "select id,avatar,status,mobile from "+USER_BASE_TABLE+" where nick_name=#{name} and pwd=#{pwd} limit 1" ;
+	
 	/**
 	 * 取离最近的前10条记录
 	 */
@@ -59,7 +64,7 @@ public class SqlConstants {
 			        + " ,eid,lat,lon,location_long_code,location_hash,nick_name,mobile,event_city,create_time FROM (  SELECT id,lat,lon,location_long_code,"
 			        + " location_hash,eid,ABS(location_long_code-#{locationLongCode}) nearcode,create_time,event_city,nick_name,mobile "
 			        + " FROM event_cycle_record"
-					+"  WHERE uid<>#{uid} AND mobile <>#{mobile}   LIMIT "+NEAR_LIMIT_NUMS
+					+"  WHERE uid<>#{uid} AND device_id <>#{deviceId}   LIMIT "+NEAR_LIMIT_NUMS
 					+" ) t  ORDER BY create_time DESC,nearcode ASC";
 
 	
@@ -82,13 +87,13 @@ public class SqlConstants {
 	public static final String GET_EVENT_CYCLE_BY_ID=" SELECT * FROM  event_cycle_record  WHERE eid=#{eid} ORDER BY from_eid ";
 	
 	/**
-	 * 获得图片事件信息
+	 * 获得图片事件相关信息列表【可能多个】
 	 */
-	public static final String GET_EVENT_PIC_BY_EID="select  * from event_pic where eid=#{eid} ";
+	public static final String GET_EVENT_PIC_LIST_BY_EID="select  id,eid,uid,pic_path,remark from event_pic where eid=#{eid} ";
 	/**
 	 * 获得文案事件信息
 	 */
-	public static final String GET_EVENT_TEXT_BY_EID="select  * from event_text where eid=#{eid} ";
+	public static final String GET_EVENT_TEXT_BY_EID="select  id,eid,uid,content  from event_text where eid=#{eid} ";
 	/**
 	 * 获得投票事件信息
 	 */

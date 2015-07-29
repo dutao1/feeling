@@ -13,5 +13,5 @@ public class LogInfo {
 
     public static final Logger EVENT_LOG = LoggerFactory.getLogger("EVENT_SERVICE.LOG");
     
-    public static final Logger WEB_LOG = LoggerFactory.getLogger("WEB_LOG");
+    public static final Logger WEB_LOG = LoggerFactory.getLogger("WEB.LOG");
 }

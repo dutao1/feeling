@@ -2,13 +2,19 @@ package com.feeling.vo;
 
 import java.util.Date;
 
+import com.feeling.annotation.NotNull;
+
+
+
  
 public class EventCycleRecordVo  extends BaseVo {
 
 	private Integer id; //主id
+	@NotNull
 	private Integer fromEid;//上级事件id
 	private Integer uid;//用户id
 	private String mobile;//手机号
+	@NotNull
 	private Integer eid; //主事件id
 	private String nickName;//昵称 
 	private String eventCity;//城市

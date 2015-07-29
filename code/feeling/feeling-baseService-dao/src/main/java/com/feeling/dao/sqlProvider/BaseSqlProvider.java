@@ -63,12 +63,12 @@ public class BaseSqlProvider {
 	}
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public String updateObjectById(Map<String,Object> params) throws Exception {
-		//获取参数
+		//获取参数 
 		Object param = params.get(SqlConstants.PARAM_NAME);
 		if(param==null){
 			throw new OptException(ReturnCodeEnum.SQL_PARAM_NAME_ERROR);
 		}
-		Class clazz = Reflector.getFanTypeObj(param.getClass());
+		Class clazz = param.getClass();
 		//未定义表
 		Table tableAnno = (Table) clazz.getAnnotation(Table.class);
 		if(tableAnno==null){
