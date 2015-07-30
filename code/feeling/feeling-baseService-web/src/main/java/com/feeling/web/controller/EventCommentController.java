@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -15,7 +16,7 @@ import com.feeling.exception.OptException;
 import com.feeling.service.EventCommentService;
 import com.feeling.vo.EventCommentRecordVo;
 import com.feeling.web.common.ReturnResult;
-
+@Controller
 public class EventCommentController   extends BaseController{
 	@Autowired
     private EventCommentService eventCommentService;
@@ -26,7 +27,7 @@ public class EventCommentController   extends BaseController{
      * @param eid 事件id
      * @return String
      */
-	@RequestMapping(value = "/comment/countComment", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+	@RequestMapping(value = "/ec/countComment", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @ResponseBody
     public String countCommentList(Integer eid){
     	if(eid==null){
@@ -46,7 +47,7 @@ public class EventCommentController   extends BaseController{
      * @param count 是否返回总数 1返回 ， 0不返回
      * @return
      */
-    @RequestMapping(value = "/comment/commentList", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/ec/commentList", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @ResponseBody
     public String getCommentList(Integer eid,Integer offset,Integer count){
     	List<EventCommentRecordDto> list  =null;
@@ -62,7 +63,7 @@ public class EventCommentController   extends BaseController{
     	if(count==1){
     		dataCount = eventCommentService.countEventCommentListByEid(eid);
     		if(dataCount>0){
-    			isFindList=false;//无记录不查列表
+    			isFindList=true;//无记录不查列表
     		}
     		hm.put("commentCount", dataCount) ;
     	}
@@ -79,7 +80,7 @@ public class EventCommentController   extends BaseController{
      * @param eventCycleRecordVo
      * @return
      */
-    @RequestMapping(value = "/comment/commentEvent", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/ec/commentEvent", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     @ResponseBody
     public String commentEvent(EventCommentRecordVo eventCommentRecordVo){
     	if(eventCommentRecordVo.getUid()==null&&StringUtils.isEmpty(eventCommentRecordVo.getDeviceId())){

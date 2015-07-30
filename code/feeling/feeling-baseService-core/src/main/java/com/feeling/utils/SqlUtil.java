@@ -179,10 +179,14 @@ public class SqlUtil {
 			}
 		}
 		String uptSql = updateSQL.toString();
-		if(uptSql!=null&&uptSql.endsWith(",")){
-			uptSql = uptSql.substring(0, uptSql.length()-1);
+		if(uptSql!=null ){
+			if(uptSql.endsWith(",")){
+				updateSQL.append(" update_time=now() ");
+			}else{
+				updateSQL.append(" ,update_time=now() ");
+			}
 		}
-		mainSql.append("update ").append(tablename).append(" set ").append(uptSql)
+		mainSql.append("update ").append(tablename).append(" set ").append(updateSQL.toString())
 		.append(" where "+toTableColumnName(pkName)+"=#{"+SqlConstants.PARAM_NAME+"."+pkName+"} ");
 		return mainSql.toString();
 	}

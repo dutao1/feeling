@@ -2,6 +2,7 @@ package com.feeling.vo;
 
 import java.util.Date;
 
+import com.feeling.annotation.NotEmpty;
 import com.feeling.annotation.Table;
 import com.feeling.constants.SqlConstants;
 

@@ -30,6 +30,8 @@ public enum ReturnCodeEnum  {
 	EVENT_PAGE_ERROR(3004, "请输入正确的页码信息"), 
 	EVENT_LOT_ERROR(3005, "经纬度输入错误"),
 	EVENT_DEVICE_ERROR(3006, "设备类型错误"),
+	EVENT_TEXT_SO_LARGE_ERROR(3007, "文字内容超过250个字"),
+	NO_EVENT_VOTE_ERROR(3008, "不存在的投票事件，%s"),
 	
 	PARAMETER_ERROR(5001, "请求参数错误，%s"),
 	FILE_LARGE_ERROR(5002, "文件超出最大值上限[%s]mb"),

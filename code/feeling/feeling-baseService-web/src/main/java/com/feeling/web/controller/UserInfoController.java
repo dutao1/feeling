@@ -2,6 +2,7 @@ package com.feeling.web.controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +10,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.feeling.dto.UserBaseDto;
 import com.feeling.enums.ReturnCodeEnum;
 import com.feeling.enums.UserStatusEnum;
 import com.feeling.exception.OptException;
 import com.feeling.service.UserService;
+import com.feeling.vo.UserUptVo;
 import com.feeling.vo.UserVo;
 import com.feeling.web.common.ReturnResult;
 import com.feeling.web.common.WebFileHelper;
@@ -54,21 +57,24 @@ public class UserInfoController  extends BaseController{
      */
     @RequestMapping(value = "/user/uptUserInfo", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String uptUserInfo(UserVo userVo,HttpServletRequest request,HttpServletResponse response){
+    public String uptUserInfo(UserUptVo userVo,HttpServletRequest request,HttpServletResponse response){
     	if(userVo==null||userVo.getId()==null){
     		throw new OptException(ReturnCodeEnum.PARAMETER_ERROR);
     	}
     	ReturnResult returnResult=new ReturnResult();
         returnResult.setResultEnu(ReturnCodeEnum.SUCCESS);
+        boolean result = false;
         try {
 	       	 String url = webFileHelper.uploadUserAvatar(request,userVo.getId());
 	       	 if(url!=null){
 	       		 userVo.setAvatar(url);
 	       	 }
+	       	 UserVo uvo = new UserVo();
+	       	 BeanUtils.copyProperties(uvo, userVo);
+	       	 result =  userService.updateUserInfo(uvo) ;
 		} catch (Exception e) {
 			super.writeErrorLog(e.getMessage());
 		}
-    	boolean result =  userService.updateUserInfo(userVo) ;
     	returnResult.setData(result);
         return returnResult.toString();
     }
@@ -80,15 +86,15 @@ public class UserInfoController  extends BaseController{
      */
     @RequestMapping(value = "/user/uptUserStatus", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String uptUserStatus(Integer id ,Integer status){
+    public String uptUserStatus(Integer uid ,Integer status){
     	
-    	if(id==null||status==null){
+    	if(uid==null||status==null){
     		throw new OptException(ReturnCodeEnum.STATUS_EMPTY_ERROR);
     	}
     	ReturnResult returnResult=new ReturnResult();
         returnResult.setResultEnu(ReturnCodeEnum.SUCCESS);
     	UserVo uvo = new UserVo();
-    	uvo.setId(id);
+    	uvo.setId(uid);
     	uvo.setStatus(status);
     	boolean result = userService.updateUserInfo(uvo);
     	returnResult.setData(result);

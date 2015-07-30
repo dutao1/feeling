@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,6 +22,7 @@ import com.feeling.web.common.WebFileHelper;
  * @author dutao
  *
  */
+@Controller
 public class UserEventController extends BaseController{
 
 	@Autowired
@@ -68,7 +70,7 @@ public class UserEventController extends BaseController{
     	if(count==1){
     		dataCount = eventService.countEventListByUid(uid);
     		if(dataCount>0){
-    			isFindList=false;//无记录不查列表
+    			isFindList=true;//无记录不查列表
     		}
     		hm.put("userEventCount", dataCount) ;
     	}

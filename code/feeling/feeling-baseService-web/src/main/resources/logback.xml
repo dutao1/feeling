@@ -150,7 +150,7 @@
 		 <appender-ref ref="DEFAULT-APPENDER"/>
 		<appender-ref ref="WEB-APPENDER"/>
 		<appender-ref ref="USER_SERVICE-APPENDER"/>
-		<appender-ref ref="EVENT_SERVICE-APPENDER"/> -->
+		<appender-ref ref="EVENT_SERVICE-APPENDER"/>
 		<appender-ref ref="STDERR-APPENDER"/>
 		<appender-ref ref="STDOUT-APPENDER"/>
 		<appender-ref ref="DAO-APPENDER"/>

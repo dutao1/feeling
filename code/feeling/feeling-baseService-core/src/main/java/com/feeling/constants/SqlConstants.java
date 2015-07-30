@@ -64,8 +64,8 @@ public class SqlConstants {
 			        + " ,eid,lat,lon,location_long_code,location_hash,nick_name,mobile,event_city,create_time FROM (  SELECT id,lat,lon,location_long_code,"
 			        + " location_hash,eid,ABS(location_long_code-#{locationLongCode}) nearcode,create_time,event_city,nick_name,mobile "
 			        + " FROM event_cycle_record"
-					+"  WHERE uid<>#{uid} AND device_id <>#{deviceId}   LIMIT "+NEAR_LIMIT_NUMS
-					+" ) t  ORDER BY create_time DESC,nearcode ASC";
+					+"  WHERE uid<>#{uid} AND device_id <>#{deviceId}   "
+					+" ) t  ORDER BY nearcode ASC,create_time DESC LIMIT "+NEAR_LIMIT_NUMS;
 
 	
 	public static final String GET_EVENT_BASE_LIST="SELECT * FROM "+EVENT_BASE_TABLE ;
@@ -81,10 +81,10 @@ public class SqlConstants {
 	 */
 	public static final String COUNT_EVENT_COMMENT_LIST_BY_EVENTID="SELECT count(0) FROM event_comment_record WHERE  eid= #{eid} " ;
 			
-	/**
+	/** 
 	 * 获得事件流转生命周期
 	 */
-	public static final String GET_EVENT_CYCLE_BY_ID=" SELECT * FROM  event_cycle_record  WHERE eid=#{eid} ORDER BY from_eid ";
+	public static final String GET_EVENT_CYCLE_BY_ID=" SELECT  id,from_eid,lat,lon,location_hash,event_city FROM  event_cycle_record  WHERE eid=#{eid} ORDER BY from_eid ";
 	
 	/**
 	 * 获得图片事件相关信息列表【可能多个】

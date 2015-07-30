@@ -2,6 +2,7 @@ package com.feeling.vo;
 
 import java.util.Date;
 
+import com.feeling.annotation.NotNull;
 import com.feeling.annotation.Table;
 import com.feeling.constants.SqlConstants;
 
@@ -19,7 +20,6 @@ public class EventVoteVo {
 	private Date createTime;//创建时间
 	private Date updateTime ;//更新时间
 	private Integer voteType;//投票类型（1：单选 2：多选）
-	
 	private String option1;//选项1
 	private String option2;//选项2
 	private String option3;//选项3
@@ -146,5 +146,37 @@ public class EventVoteVo {
 	}
 	public void setVotes6(Integer votes6) {
 		this.votes6 = votes6;
+	}
+	/**
+	 * 检查投票结果
+	 * @return int  1 OK -1:一个都没选 -2 单选选了多个
+	 */
+	public int checkVote(){
+		int votenums = 0;
+		if(votes1!=null){
+			votenums++;
+		}
+		if(votes2!=null){
+			votenums++;
+		}
+		if(votes3!=null){
+			votenums++;
+		}
+		if(votes4!=null){
+			votenums++;
+		}
+		if(votes5!=null){
+			votenums++;
+		}
+		if(votes6!=null){
+			votenums++;
+		}
+		if(votenums==0){
+			return -1;
+		}
+		if(voteType==1 &&votenums>1){
+			return -2;
+		} 
+		return 1;
 	}
 }

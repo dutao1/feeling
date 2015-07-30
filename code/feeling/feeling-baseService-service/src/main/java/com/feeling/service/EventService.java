@@ -119,9 +119,12 @@ public class EventService extends BaseService {
 		edto.setVotes4(evo.getVotes4());
 		edto.setVotes5(evo.getVotes5());
 		edto.setVotes6(evo.getVotes6());
-		eventVoteDao.updateByPk(edto);
-		// 查询
-		return eventVoteDao.selectByPk(edto);
+		int result = eventVoteDao.updateByPk(edto);
+		if(result>0){
+			// 查询
+			return eventVoteDao.selectByPk(edto);
+		}
+		return null;
 	}
 
 	/**
@@ -134,14 +137,15 @@ public class EventService extends BaseService {
 	public UserEventVo getEventInfoById(Integer eid) {
 		EventBaseDto edto = new EventBaseDto();
 		edto.setId(eid);
-		edto = eventBaseDao.selectByPk(edto);
 		try {
+			edto = eventBaseDao.selectByPk(edto);
 			if (edto != null) {
 				return setUserEventDetails(edto);
 			}
 		} catch (Exception e) {
-			LogInfo.EVENT_LOG.error(e.getMessage());
-			throw new OptException(ReturnCodeEnum.ERROR);
+			e.printStackTrace();
+			//LogInfo.EVENT_LOG.error(e.getMessage());
+			//throw new OptException(ReturnCodeEnum.ERROR);
 		}
 		return null;
 	}
@@ -241,6 +245,15 @@ public class EventService extends BaseService {
 					recommendVo.setId(erd.getId());
 					recommendVo.setEid(eid);
 					recommendVo.setUpdateTime(erd.getCreateTime());
+					recommendVo.setLat(erd.getLat());
+					recommendVo.setLon(erd.getLon());
+					recommendVo.setEventCity(erd.getEventCity());
+					if(recommendVo.getLat()!=null&&recommendVo.getLon()!=null){
+						double dist = geoHash.getPointDistance
+									(lat, lon, recommendVo.getLat(),recommendVo.getLon());
+						recommendVo.setDistMeter(dist);
+						recommendVo.setDistKm(dist/1000);
+					}
 					hm.put(eid, recommendVo);
 				}
 			}
@@ -258,18 +271,22 @@ public class EventService extends BaseService {
 						recommendVo.setSkipTimes(eventBase.getSkipTimes());
 						recommendVo.setCreateTime(eventBase.getCreateTime());
 						recommendVo.setEventType(eventBase.getEventType());
-						recommendVo.setLat(eventBase.getLat());
-						recommendVo.setLon(eventBase.getLon());
-						recommendVo.setEventCity(eventBase.getEventCity());
 						recommendVo.setNickName(eventBase.getNickName());
 						recommendVo.setMobile(eventBase.getMobile());
 						recommendVo.setCreateTime(eventBase.getCreateTime());
+						//等产品确认，是取最后一次传播者的坐标 还是发起者的坐标
+						//如果是发起者，是有问题的，这样我们从传播表排序没意义了
+						
+						/*recommendVo.setLat(eventBase.getLat());
+						recommendVo.setLon(eventBase.getLon());
+						recommendVo.setEventCity(eventBase.getEventCity());
 						if(eventBase.getLat()!=null&&eventBase.getLon()!=null){
 							double dist = geoHash.getPointDistance
 										(lat, lon, eventBase.getLat(),eventBase.getLon());
 							recommendVo.setDistMeter(dist);
 							recommendVo.setDistKm(dist/1000);
-						}
+						}*/
+						
 						UserEventVo userEventVo = setUserEventDetails(eventBase);
 						recommendVo.setEventTextVo(userEventVo.getEventTextVo());
 						recommendVo.setEventPicVos(userEventVo.getEventPicVos());
@@ -313,7 +330,7 @@ public class EventService extends BaseService {
 			// 1 插入事件基本表
 			Integer uid = eventBaseDto.getUid();
 			//游客的昵称是 deviceid 后6位
-			if(uid==null){
+			if(uid==null||uid==0){
 				String deviceId = eventBaseDto.getDeviceId();
 				if(StringUtils.isNotEmpty(deviceId)){
 					if(deviceId.length()>6){
@@ -329,9 +346,7 @@ public class EventService extends BaseService {
 						.getMessage());
 				throw new OptException(ReturnCodeEnum.EVENT_PUBLISH_ERROR);
 			}
-			// 2.事件分支表
-			insertEventDetailInfo(eventVo, eventId);
-			// 3.事件流转信息表
+			// 2.事件流转信息表
 			EventCycleRecordDto eCycleDto = new EventCycleRecordDto();
 			BeanUtils.copyProperties(eCycleDto, eventBaseDto);
 			eCycleDto.setFromEid(0);// 初始化0
@@ -341,6 +356,8 @@ public class EventService extends BaseService {
 			LogInfo.EVENT_LOG.error(e.getMessage());
 			throw new OptException(ReturnCodeEnum.ERROR);
 		}
+		// 3.事件分支表
+		insertEventDetailInfo(eventVo, eventId);
 	}
 
 	/**
@@ -352,14 +369,16 @@ public class EventService extends BaseService {
 	 *            事件id
 	 * @throws Exception
 	 */
-	private void insertEventDetailInfo(UserEventVo eventVo, Integer eventId)
-			throws Exception {
+	private void insertEventDetailInfo(UserEventVo eventVo, Integer eventId){
 		String eventType = eventVo.getEventType();
 		// 文本事件
 		if (eventType.equals(EventTypeEnum.TEXT.getName())) {
 			if (eventVo.getEventTextVo() == null 
 		||StringUtils.isEmpty(eventVo.getEventTextVo().getContent())) {
 				throw new OptException(ReturnCodeEnum.PARAMETER_ERROR,"文字信息为空");
+			}
+			if(eventVo.getEventTextVo().getContent().length()>250){
+				throw new OptException(ReturnCodeEnum.EVENT_TEXT_SO_LARGE_ERROR);
 			}
 			EventTextDto eventTextDto = new EventTextDto();
 			eventTextDto.setEid(eventId);
@@ -413,7 +432,7 @@ public class EventService extends BaseService {
 	 * @param eventBaseDto
 	 * @return UserEventVo
 	 * @throws Exception
-	 */
+	 */ 
 	private UserEventVo setUserEventDetails(EventBaseDto eventBaseDto)
 			throws Exception {
 		UserEventVo eventVo = new UserEventVo();
@@ -442,6 +461,7 @@ public class EventService extends BaseService {
 					BeanUtils.copyProperties(eventPicVo, edto);
 					ePicVos.add(eventPicVo);
 				}
+				eventVo.setEventPicVos(ePicVos);
 			}
 		}
 		return eventVo;

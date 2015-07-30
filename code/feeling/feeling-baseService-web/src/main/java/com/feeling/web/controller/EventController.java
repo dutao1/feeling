@@ -1,5 +1,6 @@
 package com.feeling.web.controller;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -9,6 +10,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,16 +18,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.feeling.dto.EventCommentRecordDto;
 import com.feeling.dto.EventCycleRecordDto;
+import com.feeling.dto.EventVoteDto;
 import com.feeling.enums.ReturnCodeEnum;
 import com.feeling.exception.OptException;
-import com.feeling.service.EventCommentService;
 import com.feeling.service.EventService;
-import com.feeling.vo.EventCommentRecordVo;
 import com.feeling.vo.EventCycleRecordVo;
 import com.feeling.vo.EventPicVo;
 import com.feeling.vo.EventRecommendVo;
+import com.feeling.vo.EventVoteVo;
 import com.feeling.vo.UserEventVo;
 import com.feeling.web.common.ReturnResult;
 import com.feeling.web.common.WebFileHelper;
@@ -40,6 +41,47 @@ public class EventController   extends BaseController{
 	private EventService eventService;
     @Autowired
     private WebFileHelper webFileHelper;
+    /**
+     * 对投票事件进行投票
+     * @param eventVoteVo
+     * @return
+     */
+    @RequestMapping(value = "/event/voteEvent", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String voteEvent(EventVoteVo eventVoteVo){
+    	if(eventVoteVo==null){
+    		throw new OptException(ReturnCodeEnum.PARAMETER_ERROR,"投票信息为空");
+    	}
+    	if(eventVoteVo.getVoteType()==null){
+    		throw new OptException(ReturnCodeEnum.PARAMETER_ERROR,"投票类型为空");
+    	}
+    	if(eventVoteVo.getId()==null){
+    		throw new OptException(ReturnCodeEnum.PARAMETER_ERROR,"投票id为空");
+    	}
+    	// 1 OK -1:一个都没选 -2 单选选了多个
+    	int checkVote = eventVoteVo.checkVote();
+    	if(checkVote==-1){
+    		throw new OptException(ReturnCodeEnum.PARAMETER_ERROR,"请选择一个选项进行投票");
+    	}
+    	if(checkVote==-2){
+    		throw new OptException(ReturnCodeEnum.PARAMETER_ERROR,"只能选择一个选项");
+    	}
+    	EventVoteDto edto = eventService.voteEvent(eventVoteVo);
+    	if(edto!=null){
+    		try {
+    			BeanUtils.copyProperties(eventVoteVo, edto);
+    		} catch (Exception e) {
+    			super.writeErrorLog(e.getMessage());
+    			throw new OptException(ReturnCodeEnum.ERROR);
+    		} 
+    	}else{
+    		throw new OptException(ReturnCodeEnum.NO_EVENT_VOTE_ERROR,eventVoteVo.getId());
+    	}
+    	ReturnResult returnResult=new ReturnResult();
+        returnResult.setResultEnu(ReturnCodeEnum.SUCCESS);
+        returnResult.setData(eventVoteVo);
+        return returnResult.toString();
+    }
     
     /**
      * 获得事件流转列表
@@ -119,9 +161,9 @@ public class EventController   extends BaseController{
      */
     @RequestMapping(value = "/event/recommendEvent", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String recommendEvent(Integer uid,String mobile,Double lat,Double lon){
-    	if(uid==null&&StringUtils.isEmpty(mobile)){
-    		throw new OptException(ReturnCodeEnum.PARAMETER_ERROR,"用户未登录或手机号为空");
+    public String recommendEvent(Integer uid,String deviceId,Double lat,Double lon){
+    	if(uid==null&&StringUtils.isEmpty(deviceId)){
+    		throw new OptException(ReturnCodeEnum.PARAMETER_ERROR,"用户id和设备id不能同时为空");
     	}
     	if(lat==null||lon==null){
     		throw new OptException(ReturnCodeEnum.EVENT_LOT_ERROR);
@@ -130,7 +172,10 @@ public class EventController   extends BaseController{
     	ReturnResult returnResult=new ReturnResult();
         returnResult.setResultEnu(ReturnCodeEnum.SUCCESS);
     	try {
-		    list = eventService.recommendEvent(uid, mobile, lat, lon);
+    		if(uid==null){
+    			uid=-1;
+    		}
+		    list = eventService.recommendEvent(uid, deviceId, lat, lon);
 		    if(list!=null){
 		    	for(EventRecommendVo rvo:list){
 		    		List<EventPicVo> listPic = rvo.getEventPicVos();
@@ -262,7 +307,7 @@ public class EventController   extends BaseController{
     	if(eventVo==null){
     		throw new OptException(ReturnCodeEnum.PARAMETER_ERROR);
     	}
-    	if(eventVo.getUid()==null||StringUtils.isEmpty(eventVo.getDeviceId())){
+    	if(eventVo.getUid()==null&&StringUtils.isEmpty(eventVo.getDeviceId())){
     		throw new OptException(ReturnCodeEnum.PARAMETER_ERROR,"用户id或设备号至少输入一个");
     	}
     	//经纬度判断

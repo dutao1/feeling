@@ -67,7 +67,7 @@ public class UserService extends BaseService{
 	 * @return boolean
 	 */ 
 	public boolean modifyPwd(Integer uid,String oldPwd,String newPwd){
-		if(uid!=null){
+		if(uid==null){
 			throw new OptException(ReturnCodeEnum.NO_LOGIN_ERROR);
 		}
 		if(StringUtils.isEmpty(oldPwd)||

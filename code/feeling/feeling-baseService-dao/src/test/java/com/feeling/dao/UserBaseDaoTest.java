@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.feeling.dto.EventBaseDto;
+import com.feeling.dto.EventVoteDto;
 import com.feeling.dto.UserBaseDto;
 
 /**
@@ -26,6 +26,9 @@ public class UserBaseDaoTest  extends DaoTestBase {
 	@Autowired
 	EventBaseDao eventBaseDao;
 	
+	@Autowired
+	EventVoteDao eventVoteDao;
+	
 	//@Test
 	public void testInsertUserBase(){
 		UserBaseDto u= new UserBaseDto();
@@ -36,9 +39,7 @@ public class UserBaseDaoTest  extends DaoTestBase {
 		System.out.println(u.getId());
 		
 	}
-	
-	
-	@Test
+	//@Test
 	public void testInsertEventBase(){
 		eventBaseDao.getEventListByUid(1, 1, 1);
 		/*EventBaseDto u= new EventBaseDto();

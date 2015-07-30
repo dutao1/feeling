@@ -21,7 +21,4 @@ public interface BaseDao<T> {
 	@InsertProvider(type=BaseSqlProvider.class,method = "insertObject")
 	public void insertWithOutId(@Param("tVo") T tVo,@Param("id") Integer id);
 
-	@SelectProvider(type=BaseSqlProvider.class,method = "selectByPk")
-	public T selectByPk(@Param("tVo") T tVo);
-
 }

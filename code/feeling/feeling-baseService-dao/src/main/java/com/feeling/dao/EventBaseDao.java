@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 
 import com.feeling.constants.SqlConstants;
+import com.feeling.dao.sqlProvider.BaseSqlProvider;
 import com.feeling.dao.sqlProvider.EventSqlProvider;
 import com.feeling.dto.EventBaseDto;
 
@@ -49,4 +50,7 @@ public interface EventBaseDao   extends  BaseDao<EventBaseDto> {
 	@SelectProvider(type=EventSqlProvider.class,method = "getEventListByIdList")
 	public List<EventBaseDto> getEventListByIdList(@Param("ids")Integer[] ids);
 
+	@SelectProvider(type=BaseSqlProvider.class,method = "selectByPk")
+	public EventBaseDto selectByPk(@Param("tVo") EventBaseDto tVo);
+	
 }
