@@ -38,12 +38,12 @@ CREATE TABLE `event_base_info` (
   `mobile` varchar(16) COLLATE utf8_bin DEFAULT NULL COMMENT '手机号-游客',
   `nick_name` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '昵称(唯一且不能修改)',
   `device_type` varchar(16) COLLATE utf8_bin DEFAULT NULL COMMENT '设备类型',
-  `device_imei` varchar(64) COLLATE utf8_bin DEFAULT NULL COMMENT 'imei号',
-  `device_id` varchar(64) COLLATE utf8_bin DEFAULT NULL COMMENT '设备id',
+  `device_imei` varchar(256) COLLATE utf8_bin DEFAULT NULL COMMENT 'imei号',
+  `device_id` varchar(256) COLLATE utf8_bin DEFAULT NULL COMMENT '设备id',
   PRIMARY KEY (`id`),
   KEY `i_uid` (`uid`),
   KEY `local_near_index` (`is_display`,`location_long_code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='用户创建事件表';
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='用户创建事件表';
 
 /*Table structure for table `event_comment_record` */
 
@@ -55,9 +55,9 @@ CREATE TABLE `event_comment_record` (
   `uid` int(11) DEFAULT '0' COMMENT '评论用户id,游客则为0',
   `lat` double DEFAULT NULL COMMENT '纬度',
   `lon` double DEFAULT NULL COMMENT '经度',
-  `device_type` tinyint(2) DEFAULT '1' COMMENT '1 ios,2 android',
-  `device_imei` varchar(64) DEFAULT NULL COMMENT 'imei号',
-  `device_id` varchar(64) DEFAULT NULL COMMENT '设备id',
+  `device_type` varchar(16) DEFAULT 'android' COMMENT '1 ios,2 android',
+  `device_imei` varchar(256) DEFAULT NULL COMMENT 'imei号',
+  `device_id` varchar(256) DEFAULT NULL COMMENT '设备id',
   `location_long_code` bigint(15) DEFAULT NULL COMMENT '长整形数字坐标',
   `status` tinyint(1) DEFAULT '1' COMMENT '1 可用 0 不可用',
   `create_time` datetime NOT NULL DEFAULT '1997-01-01 00:00:00' COMMENT '创建时间',
@@ -70,7 +70,7 @@ CREATE TABLE `event_comment_record` (
   `event_city` varchar(128) DEFAULT NULL COMMENT '所在城市',
   PRIMARY KEY (`id`),
   KEY `from_event_id` (`eid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='事件评论的记录';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='事件评论的记录';
 
 /*Table structure for table `event_cycle_record` */
 
@@ -82,9 +82,9 @@ CREATE TABLE `event_cycle_record` (
   `uid` int(11) DEFAULT NULL COMMENT '用户id',
   `lat` double DEFAULT NULL COMMENT '纬度',
   `lon` double DEFAULT NULL COMMENT '经度',
-  `device_type` tinyint(2) DEFAULT '1' COMMENT '1 ios,2 android',
-  `device_imei` varchar(192) COLLATE utf8_bin DEFAULT NULL COMMENT 'imei',
-  `device_id` varchar(192) COLLATE utf8_bin DEFAULT NULL COMMENT '设备id',
+  `device_type` varchar(16) COLLATE utf8_bin DEFAULT 'android' COMMENT '1 ios,2 android',
+  `device_imei` varchar(256) COLLATE utf8_bin DEFAULT NULL COMMENT 'imei',
+  `device_id` varchar(256) COLLATE utf8_bin DEFAULT NULL COMMENT '设备id',
   `location_long_code` bigint(15) DEFAULT NULL COMMENT '长整形数字坐标',
   `create_time` datetime NOT NULL DEFAULT '1997-01-01 00:00:00' COMMENT '创建时间',
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
@@ -96,7 +96,7 @@ CREATE TABLE `event_cycle_record` (
   PRIMARY KEY (`id`),
   KEY `location_long_code` (`uid`,`mobile`,`location_long_code`),
   KEY `location_hash` (`uid`,`mobile`,`location_hash`,`location_long_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='事件转发流转记录表';
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='事件转发流转记录表';
 
 /*Table structure for table `event_pic` */
 
@@ -113,7 +113,7 @@ CREATE TABLE `event_pic` (
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `i_uid` (`uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='图片事件表';
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COMMENT='图片事件表';
 
 /*Table structure for table `event_text` */
 
@@ -129,7 +129,7 @@ CREATE TABLE `event_text` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`eid`),
   KEY `i_uid` (`uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文字事件表';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='文字事件表';
 
 /*Table structure for table `event_vote` */
 
@@ -158,7 +158,7 @@ CREATE TABLE `event_vote` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `eid` (`eid`),
   KEY `i_uid` (`uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='投票事件表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='投票事件表';
 
 /*Table structure for table `user_base_info` */
 
@@ -179,7 +179,7 @@ CREATE TABLE `user_base_info` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `nick_name` (`nick_name`),
   KEY `mobile` (`mobile`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COMMENT='用户信息';
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8 COMMENT='用户信息';
 
 /*Table structure for table `user_locus_info` */
 
@@ -193,15 +193,15 @@ CREATE TABLE `user_locus_info` (
   `lon` double DEFAULT '0' COMMENT '经度',
   `location_long_code` bigint(8) DEFAULT '0' COMMENT '长整型坐标',
   `device_type` varchar(16) DEFAULT NULL COMMENT 'android|ios',
-  `device_imei` varchar(64) DEFAULT NULL COMMENT 'imei号',
-  `device_id` varchar(64) DEFAULT NULL COMMENT '设备编号',
+  `device_imei` varchar(256) DEFAULT NULL COMMENT 'imei号',
+  `device_id` varchar(256) DEFAULT NULL COMMENT '设备编号',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   `location_hash` varchar(32) DEFAULT NULL COMMENT '经纬度hash值',
   `city_code` varchar(128) DEFAULT NULL COMMENT '城市',
   PRIMARY KEY (`id`),
   KEY `i_uid` (`uid`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='用户行为轨迹表';
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 COMMENT='用户行为轨迹表';
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
