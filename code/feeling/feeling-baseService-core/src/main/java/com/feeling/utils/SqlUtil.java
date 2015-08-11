@@ -85,7 +85,7 @@ public class SqlUtil {
 				if (!b) {
 					Object val = hm.get(key);
 					boolean isCheckOk = false;
-					if(val!=null){
+					if(val!=null&&!key.equals(SqlConstants.ID)){
 						if (val.getClass().getName().equals("String") || val.getClass().getName().equals("java.lang.String")) {
 							isCheckOk = val == null || val.toString().equals("") ? false : true;
 						}else{

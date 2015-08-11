@@ -16,6 +16,7 @@ import com.feeling.enums.ReturnCodeEnum;
 import com.feeling.enums.UserStatusEnum;
 import com.feeling.exception.OptException;
 import com.feeling.service.UserService;
+import com.feeling.vo.UserLoginVo;
 import com.feeling.vo.UserUptVo;
 import com.feeling.vo.UserVo;
 import com.feeling.web.common.ReturnResult;
@@ -31,7 +32,6 @@ public class UserInfoController  extends BaseController{
 	private UserService userService;
     @Autowired
     private WebFileHelper webFileHelper;
-    
     /**
      * 密码修改
      * @param uid 用户id
@@ -41,8 +41,8 @@ public class UserInfoController  extends BaseController{
      */
     @RequestMapping(value = "/user/uptPwd", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String uptPwd(Integer uid ,String pwd,String newPwd){
-    	boolean result = userService.modifyPwd(uid, pwd, newPwd);
+    public String uptPwd(Integer uid ,String pwd,String newPwd,String loginToken){
+    	boolean result = userService.modifyPwd(uid, pwd, newPwd,loginToken);
     	ReturnResult returnResult=new ReturnResult();
         returnResult.setResultEnu(ReturnCodeEnum.SUCCESS);
     	returnResult.setData(result);
@@ -58,7 +58,8 @@ public class UserInfoController  extends BaseController{
     @RequestMapping(value = "/user/uptUserInfo", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     @ResponseBody
     public String uptUserInfo(UserUptVo userVo,HttpServletRequest request,HttpServletResponse response){
-    	if(userVo==null||userVo.getId()==null){
+    	if(userVo==null||userVo.getId()==null||
+    			StringUtils.isEmpty(userVo.getLoginToken())){
     		throw new OptException(ReturnCodeEnum.PARAMETER_ERROR);
     	}
     	ReturnResult returnResult=new ReturnResult();
@@ -71,7 +72,7 @@ public class UserInfoController  extends BaseController{
 	       	 }
 	       	 UserVo uvo = new UserVo();
 	       	 BeanUtils.copyProperties(uvo, userVo);
-	       	 result =  userService.updateUserInfo(uvo) ;
+	       	 result =  userService.updateUserInfo(uvo,userVo.getLoginToken()) ;
 		} catch (Exception e) {
 			super.writeErrorLog(e.getMessage());
 		}
@@ -96,11 +97,25 @@ public class UserInfoController  extends BaseController{
     	UserVo uvo = new UserVo();
     	uvo.setId(uid);
     	uvo.setStatus(status);
-    	boolean result = userService.updateUserInfo(uvo);
+    	boolean result = userService.updateUser(uvo);
     	returnResult.setData(result);
         return returnResult.toString();
     }
-    
+    /**
+     * 用户正常退出接口
+     * @param uid
+     * @param loginToken
+     * @return
+     */
+    @RequestMapping(value = "/user/logout", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String logout(Integer uid,String loginToken){
+    	boolean result = userService.logout(uid,loginToken);
+    	ReturnResult returnResult=new ReturnResult();
+        returnResult.setResultEnu(ReturnCodeEnum.SUCCESS); 
+        returnResult.setData(result);
+        return returnResult.toString();
+    }
     /**
      * 用户登录
      * @param userName 用户名
@@ -109,17 +124,16 @@ public class UserInfoController  extends BaseController{
      */
     @RequestMapping(value = "/user/login", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String login(String userName ,String pwd){
-    	if(StringUtils.isEmpty(userName)||
-    			StringUtils.isEmpty(pwd)){
+    public String login(UserLoginVo userLoginVo){
+    	if(userLoginVo==null||
+    			StringUtils.isEmpty(userLoginVo.getNickName())||
+    			StringUtils.isEmpty(userLoginVo.getPwd())){
     		throw new OptException(ReturnCodeEnum.PWD_UNAME_EMPTY_ERROR);
     	}
     	ReturnResult returnResult=new ReturnResult();
         returnResult.setResultEnu(ReturnCodeEnum.SUCCESS); 
-    	UserVo uvo = new UserVo();
-    	uvo.setPwd(pwd);
-    	uvo.setNickName(userName);
-    	UserBaseDto udto = userService.login(uvo);
+    	UserBaseDto udto = userService.login(userLoginVo);
+    	UserVo uvo =null;
     	if(udto!=null){
     		udto.getStatus();
     		if(UserStatusEnum.OK.getCode()!=udto.getStatus()){
@@ -133,6 +147,7 @@ public class UserInfoController  extends BaseController{
 			} 
     	}
        uvo.setAvatar(webFileHelper.getUserAvatarUrl(uvo.getAvatar()));
+       uvo.setLoginToken(userLoginVo.getLoginToken());
 	   returnResult.setData(uvo);
        return returnResult.toString();
     }
@@ -153,7 +168,7 @@ public class UserInfoController  extends BaseController{
         		 UserVo userVo = new UserVo();
         		 userVo.setId(uid);
         		 userVo.setAvatar(url);
-        		 userService.updateUserInfo(userVo);
+        		 userService.updateUser(userVo);
         	 }
 		} catch (Exception e) {
 			super.writeErrorLog(e.getMessage());

@@ -1,6 +1,5 @@
 package com.feeling.web.controller;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,6 +22,7 @@ import com.feeling.dto.EventVoteDto;
 import com.feeling.enums.ReturnCodeEnum;
 import com.feeling.exception.OptException;
 import com.feeling.service.EventService;
+import com.feeling.service.RedisClient;
 import com.feeling.vo.EventCycleRecordVo;
 import com.feeling.vo.EventPicVo;
 import com.feeling.vo.EventRecommendVo;
@@ -41,6 +41,8 @@ public class EventController   extends BaseController{
 	private EventService eventService;
     @Autowired
     private WebFileHelper webFileHelper;
+    @Autowired
+    RedisClient redisClient;
     /**
      * 对投票事件进行投票
      * @param eventVoteVo
@@ -204,7 +206,7 @@ public class EventController   extends BaseController{
     @RequestMapping(value = "/event/publishVote", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     @ResponseBody
     public String publishVote(UserEventVo eventVo){
-    		checkEventParam(eventVo);
+    		checkPublishEventParam(eventVo);
 	    	eventService.publishNewEvent(eventVo);
     		ReturnResult returnResult=new ReturnResult();
             returnResult.setResultEnu(ReturnCodeEnum.SUCCESS);
@@ -218,7 +220,7 @@ public class EventController   extends BaseController{
     @RequestMapping(value = "/event/publishText", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     @ResponseBody
     public String publishText(UserEventVo eventVo){
-    		checkEventParam(eventVo);
+    		checkPublishEventParam(eventVo);
 	    	eventService.publishNewEvent(eventVo);
     		ReturnResult returnResult=new ReturnResult();
             returnResult.setResultEnu(ReturnCodeEnum.SUCCESS);
@@ -235,7 +237,7 @@ public class EventController   extends BaseController{
     @RequestMapping(value = "/event/publishMedia", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     @ResponseBody
     public String publishMedia(UserEventVo eventVo,HttpServletRequest request,HttpServletResponse response){
-    		checkEventParam(eventVo);
+    		checkPublishEventParam(eventVo);
     		if(eventVo.getEventPicVo()==null||StringUtils.isEmpty(eventVo.getEventPicVo().getRemark())){
         		throw new OptException(ReturnCodeEnum.PARAMETER_ERROR,"请输入你的描述");
         	}
@@ -303,12 +305,16 @@ public class EventController   extends BaseController{
      * 检查参数
      * @param eventVo
      */
-    private void checkEventParam(UserEventVo eventVo){
+    private void checkPublishEventParam(UserEventVo eventVo){
     	if(eventVo==null){
     		throw new OptException(ReturnCodeEnum.PARAMETER_ERROR);
     	}
     	if(eventVo.getUid()==null&&StringUtils.isEmpty(eventVo.getDeviceId())){
     		throw new OptException(ReturnCodeEnum.PARAMETER_ERROR,"用户id或设备号至少输入一个");
+    	}
+    	boolean isLogin = redisClient.checkLoginToken(eventVo.getLoginToken(), eventVo.getUid());
+    	if(!isLogin){
+    		throw new OptException(ReturnCodeEnum.LOGIN_TOKEN_ERROR); 
     	}
     	//经纬度判断
     	if(eventVo.getLat()==null||eventVo.getLon()==null

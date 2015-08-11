@@ -21,7 +21,14 @@ public class EventCommentRecordVo   extends BaseVo  {
 	private String nickName;//昵称
 	private Integer status;
 	private String eventCity;//城市
-	 
+	private String loginToken;//登录token
+	
+	public String getLoginToken() {
+		return loginToken;
+	}
+	public void setLoginToken(String loginToken) {
+		this.loginToken = loginToken;
+	}
 	public String getEventCity() {
 		return eventCity;
 	}

@@ -23,6 +23,8 @@ public class EventCommentService  extends BaseService{
 	EventCommentRecordDao eventCommentRecordDao;//事件评论操作
 	@Autowired
 	EventBaseDao eventBaseDao;//事件基本操作
+	@Autowired
+    RedisClient redisClient;
 	/**
 	 * 统计评论数量
 	 * @param eid 事件id
@@ -52,6 +54,10 @@ public class EventCommentService  extends BaseService{
 	 */
 	public void toCommentEvent(EventCommentRecordVo eventCommentRecordVo){
 		if(eventCommentRecordVo!=null){
+			boolean login = redisClient.checkLoginToken(eventCommentRecordVo.getLoginToken(), eventCommentRecordVo.getUid());
+			if(!login){
+				throw new OptException(ReturnCodeEnum.LOGIN_TOKEN_ERROR);
+			}
 			EventCommentRecordDto eventCommentDto = new EventCommentRecordDto();
 			try {
 				BeanUtils.copyProperties(eventCommentDto, eventCommentRecordVo);

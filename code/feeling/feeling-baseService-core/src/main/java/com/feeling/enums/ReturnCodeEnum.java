@@ -23,6 +23,8 @@ public enum ReturnCodeEnum  {
 	STATUS_EMPTY_ERROR(2007, "用户ID或状态不能为空"),
 	NO_LOGIN_ERROR(2008, "请先登录"),
 	PWD_MODIFY_INPUT_ERROR(2009, "新旧密码输入有误"),
+	LOGIN_TOKEN_EMPTY(2010, "用户登录密钥为空"),
+	LOGIN_TOKEN_ERROR(2011, "用户登录密钥异常,请重新登录"),
 	
 	EVENT_TYPE_EMPTY_ERROR(3001, "事件类型不能为空"),
 	EVENT_PUBLISH_ERROR(3002, "事件发布失败，id为空"),

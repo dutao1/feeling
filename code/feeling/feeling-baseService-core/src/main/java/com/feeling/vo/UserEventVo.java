@@ -8,7 +8,14 @@ public class UserEventVo extends EventVo{
 	private EventTextVo eventTextVo;//文案vo
 	
 	private List<EventPicVo> eventPicVos;//图片/视频 vo[列表]
+	private String loginToken;//登录token
 	
+	public String getLoginToken() {
+		return loginToken;
+	}
+	public void setLoginToken(String loginToken) {
+		this.loginToken = loginToken;
+	}
 	public List<EventPicVo> getEventPicVos() {
 		return eventPicVos;
 	}

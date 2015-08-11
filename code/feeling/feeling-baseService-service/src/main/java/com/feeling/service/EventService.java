@@ -245,15 +245,6 @@ public class EventService extends BaseService {
 					recommendVo.setId(erd.getId());
 					recommendVo.setEid(eid);
 					recommendVo.setUpdateTime(erd.getCreateTime());
-					recommendVo.setLat(erd.getLat());
-					recommendVo.setLon(erd.getLon());
-					recommendVo.setEventCity(erd.getEventCity());
-					if(recommendVo.getLat()!=null&&recommendVo.getLon()!=null){
-						double dist = geoHash.getPointDistance
-									(lat, lon, recommendVo.getLat(),recommendVo.getLon());
-						recommendVo.setDistMeter(dist);
-						recommendVo.setDistKm(dist/1000);
-					}
 					hm.put(eid, recommendVo);
 				}
 			}
@@ -274,10 +265,9 @@ public class EventService extends BaseService {
 						recommendVo.setNickName(eventBase.getNickName());
 						recommendVo.setMobile(eventBase.getMobile());
 						recommendVo.setCreateTime(eventBase.getCreateTime());
-						//等产品确认，是取最后一次传播者的坐标 还是发起者的坐标
-						//如果是发起者，是有问题的，这样我们从传播表排序没意义了
 						
-						/*recommendVo.setLat(eventBase.getLat());
+						
+						recommendVo.setLat(eventBase.getLat());
 						recommendVo.setLon(eventBase.getLon());
 						recommendVo.setEventCity(eventBase.getEventCity());
 						if(eventBase.getLat()!=null&&eventBase.getLon()!=null){
@@ -285,7 +275,7 @@ public class EventService extends BaseService {
 										(lat, lon, eventBase.getLat(),eventBase.getLon());
 							recommendVo.setDistMeter(dist);
 							recommendVo.setDistKm(dist/1000);
-						}*/
+						}
 						
 						UserEventVo userEventVo = setUserEventDetails(eventBase);
 						recommendVo.setEventTextVo(userEventVo.getEventTextVo());

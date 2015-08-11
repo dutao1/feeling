@@ -83,8 +83,8 @@ public class EventCommentController   extends BaseController{
     @RequestMapping(value = "/ec/commentEvent", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     @ResponseBody
     public String commentEvent(EventCommentRecordVo eventCommentRecordVo){
-    	if(eventCommentRecordVo.getUid()==null&&StringUtils.isEmpty(eventCommentRecordVo.getDeviceId())){
-    		throw new OptException(ReturnCodeEnum.PARAMETER_ERROR,"用户未登录或设备号为空");
+    	if(eventCommentRecordVo.getUid()==null){
+    		throw new OptException(ReturnCodeEnum.NO_LOGIN_ERROR);
     	}
     	eventCommentService.toCommentEvent(eventCommentRecordVo);
     	List<EventCommentRecordDto> list = eventCommentService.getCommentListByEidPage

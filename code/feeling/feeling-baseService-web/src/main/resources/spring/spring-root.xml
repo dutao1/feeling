@@ -23,6 +23,7 @@
 	
     <import resource="classpath:/spring/spring-database.xml" />
     <import resource="classpath:/spring/spring-context.xml" />
+    <import resource="classpath:/spring/spring-redis.xml" />
     <import resource="classpath:/spring/spring-mvc.xml" />
         
 </beans>

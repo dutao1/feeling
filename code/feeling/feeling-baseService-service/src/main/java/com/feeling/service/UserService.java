@@ -1,6 +1,5 @@
 package com.feeling.service;
 
-import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -17,7 +16,9 @@ import com.feeling.enums.ReturnCodeEnum;
 import com.feeling.enums.UserLocusEnum;
 import com.feeling.enums.UserStatusEnum;
 import com.feeling.exception.OptException;
+import com.feeling.log.LogInfo;
 import com.feeling.utils.CryptUtil;
+import com.feeling.vo.UserLoginVo;
 import com.feeling.vo.UserVo;
 
 /**
@@ -30,33 +31,26 @@ public class UserService extends BaseService{
 
 	@Autowired
 	UserBaseDao userBaseDao;
-	
 	@Autowired
 	UserLocusDao userLocusDao;
+    @Autowired
+    RedisClient redisClient;
+    
 	/**
 	 * 更新用户信息，包括更新状态，照片等等
 	 * @param uvo 必须有用户id
+	 * @param loginToken token
 	 * @return boolean
 	 */
-	public boolean updateUserInfo(UserVo uvo){
-		
-		UserBaseDto userBaseDto  = new UserBaseDto();
-		try { 
-			if(uvo==null||uvo.getId()==null){
-				throw new OptException(ReturnCodeEnum.NO_LOGIN_ERROR);
-			}
-			BeanUtils.copyProperties(userBaseDto, uvo);
-			int result = userBaseDao.updateByPk(userBaseDto);
-			if(result==0){
-				throw new OptException(ReturnCodeEnum.NO_USER_ERROR);
-			}
-			return result==1?true:false;
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+	public boolean updateUserInfo(UserVo uvo,String loginToken){
+		if(uvo==null||uvo.getId()==null){
+			throw new OptException(ReturnCodeEnum.NO_LOGIN_ERROR);
 		}
-		return false;
+		boolean isLogin = redisClient.checkLoginToken(loginToken, uvo.getId());
+		if(!isLogin){
+			throw new OptException(ReturnCodeEnum.LOGIN_TOKEN_ERROR);
+		}
+		return updateUser(uvo);
 	}
 	
 	/**
@@ -66,9 +60,13 @@ public class UserService extends BaseService{
 	 * @param newPwd
 	 * @return boolean
 	 */ 
-	public boolean modifyPwd(Integer uid,String oldPwd,String newPwd){
+	public boolean modifyPwd(Integer uid,String oldPwd,String newPwd,String token){
 		if(uid==null){
 			throw new OptException(ReturnCodeEnum.NO_LOGIN_ERROR);
+		}
+		boolean tokenFlag = redisClient.checkLoginToken(token, uid);
+		if(!tokenFlag){
+			throw new OptException(ReturnCodeEnum.LOGIN_TOKEN_ERROR);
 		}
 		if(StringUtils.isEmpty(oldPwd)||
 				StringUtils.isEmpty(newPwd)){
@@ -88,13 +86,25 @@ public class UserService extends BaseService{
 			throw new OptException(ReturnCodeEnum.PWD_ERROR);
 		}
 	}
+	/**
+	 * 退出登录状态
+	 * @param uid
+	 * @return
+	 */
+	public boolean logout(Integer uid,String loginToken){
+		boolean b = redisClient.checkLoginToken(loginToken, uid);
+		if(!b){
+			throw new OptException(ReturnCodeEnum.LOGIN_TOKEN_ERROR);
+		}
+		return redisClient.clearLoginToken(uid);
+	}
 	
 	/**
 	 * 用户登录
 	 * @param uvo
 	 * @return UserBaseDto
 	 */
-	public UserBaseDto login(UserVo uvo){
+	public UserBaseDto login(UserLoginVo uvo){
 		
 		if(uvo==null){
 			return null;
@@ -102,7 +112,16 @@ public class UserService extends BaseService{
 		String pwd = CryptUtil.encrypt(uvo.getPwd());
 		UserBaseDto userBaseDto = userBaseDao.checkPwdByName(uvo.getNickName(), pwd);
 		if(userBaseDto!=null){
-			insertUserLocus(uvo,userBaseDto.getId(),UserLocusEnum.LOGIN.getCode());
+			UserVo userVo = new UserVo();
+			try {
+				BeanUtils.copyProperties(userVo, uvo);
+			} catch (Exception e) {
+				LogInfo.USER_LOG.error(e.getMessage());
+			}  
+			insertUserLocus(userVo,userBaseDto.getId(),UserLocusEnum.LOGIN.getCode());
+			//设置登录状态
+			String token = redisClient.setLoginToken(userBaseDto.getId(),uvo.getDeviceId());
+			uvo.setLoginToken(token);
 		}else{
 			throw new OptException(ReturnCodeEnum.PWD_ERROR);
 		}
@@ -140,6 +159,31 @@ public class UserService extends BaseService{
 		}
 		return uid;
 	}
+	
+	/**
+	 * 更新用户信息
+	 * @param uvo
+	 * @return
+	 */
+	public boolean updateUser(UserVo uvo){
+		
+		UserBaseDto userBaseDto  = new UserBaseDto();
+		try { 
+			if(uvo==null||uvo.getId()==null){
+				throw new OptException(ReturnCodeEnum.NO_LOGIN_ERROR);
+			}
+			BeanUtils.copyProperties(userBaseDto, uvo);
+			int result = userBaseDao.updateByPk(userBaseDto);
+			if(result==0){
+				throw new OptException(ReturnCodeEnum.NO_USER_ERROR);
+			}
+			return result==1?true:false;
+		} catch (Exception e) {
+			LogInfo.USER_LOG.error(e.getMessage());
+		} 
+		return false;
+	}
+	
 	/**
 	 * 插入用户行为数据
 	 * @param uvo 用户信息

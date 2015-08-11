@@ -13,7 +13,14 @@ public class UserUptVo  extends BaseVo{
 	private String cityCode;//城市代码
 	private Date birthday;//生日
 	private String avatar;//照片url
+	private String loginToken;//登录token
 	
+	public String getLoginToken() {
+		return loginToken;
+	}
+	public void setLoginToken(String loginToken) {
+		this.loginToken = loginToken;
+	}
 	public Integer getId() {
 		return id;
 	}
