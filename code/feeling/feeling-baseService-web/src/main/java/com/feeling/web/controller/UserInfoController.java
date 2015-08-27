@@ -122,7 +122,7 @@ public class UserInfoController  extends BaseController{
      * @param pwd 密码
      * @return
      */
-    @RequestMapping(value = "/user/login", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/user/login", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     @ResponseBody
     public String login(UserLoginVo userLoginVo){
     	if(userLoginVo==null||

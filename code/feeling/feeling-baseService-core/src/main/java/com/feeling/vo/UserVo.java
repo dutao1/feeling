@@ -24,7 +24,7 @@ public class UserVo  extends BaseVo{
 	private String cityCode;//城市代码
 	private Date birthday;//生日
 	private String avatar;//照片url
-	private Integer status;//状态  -9: 注销 0:正常 1:锁定
+	private Integer status;//状态  -9: 注销， -1:锁定，1:正常
 	private Date createTime;//创建时间
 	private Date updateTime;//更新时间
 	private String loginToken;//登录token
