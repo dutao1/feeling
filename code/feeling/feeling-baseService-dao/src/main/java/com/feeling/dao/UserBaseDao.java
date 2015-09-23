@@ -22,7 +22,7 @@ public interface UserBaseDao  extends  BaseDao<UserBaseDto>{
 	@Select(SqlConstants.CHECK_PWD_SQL)
 	public UserBaseDto checkPwd(@Param("uid")Integer uid,@Param("pwd")String pwd);
 	
-	@Select(SqlConstants.CHECK_PWD_BYNAME_SQL)
-	public UserBaseDto checkPwdByName(@Param("name")String name,@Param("pwd")String pwd);
+	@Select(SqlConstants.CHECK_PWD_BYMOBILE_SQL)
+	public UserBaseDto checkPwdByMobile(@Param("mobile")String mobile,@Param("pwd")String pwd);
 	
 }

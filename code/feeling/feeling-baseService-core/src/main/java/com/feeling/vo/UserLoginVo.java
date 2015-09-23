@@ -2,7 +2,7 @@ package com.feeling.vo;
 
 public class UserLoginVo extends BaseVo{
 	
-	private String  nickName; //昵称or用户名
+	private String  mobile; //手机号
 	
 	private String pwd;//密码 
 	
@@ -16,12 +16,12 @@ public class UserLoginVo extends BaseVo{
 		this.loginToken = loginToken;
 	}
 
-	public String getNickName() {
-		return nickName;
+	public String getMobile() {
+		return mobile;
 	}
 
-	public void setNickName(String nickName) {
-		this.nickName = nickName;
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
 	}
 
 	public String getPwd() {

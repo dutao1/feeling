@@ -53,9 +53,9 @@ public class SqlConstants {
 	public static final String CHECK_PWD_SQL = "select id,avatar,status,mobile from "+USER_BASE_TABLE+" where id=#{uid} and pwd=#{pwd} limit 1" ;
 
 	/**
-	 * 根据用户名和密码查询是否存在用户
+	 * 根据手机号和密码查询是否存在用户
 	 */
-	public static final String CHECK_PWD_BYNAME_SQL = "select id,avatar,status,mobile from "+USER_BASE_TABLE+" where nick_name=#{name} and pwd=#{pwd} limit 1" ;
+	public static final String CHECK_PWD_BYMOBILE_SQL = "select id,avatar,status,mobile from "+USER_BASE_TABLE+" where mobile=#{mobile} and pwd=#{pwd} limit 1" ;
 	
 	/**
 	 * 取离最近的前10条记录

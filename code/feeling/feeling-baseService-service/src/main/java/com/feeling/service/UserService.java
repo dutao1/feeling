@@ -110,7 +110,7 @@ public class UserService extends BaseService{
 			return null;
 		}
 		String pwd = CryptUtil.encrypt(uvo.getPwd());
-		UserBaseDto userBaseDto = userBaseDao.checkPwdByName(uvo.getNickName(), pwd);
+		UserBaseDto userBaseDto = userBaseDao.checkPwdByMobile(uvo.getMobile(), pwd);
 		if(userBaseDto!=null){
 			UserVo userVo = new UserVo();
 			try {
@@ -138,7 +138,7 @@ public class UserService extends BaseService{
 		
 		Integer uid = -1;
 		if(uvo!=null){
-			
+			uvo.setNickName(uvo.getMobile());
 			UserBaseDto userBaseDto = new UserBaseDto();
 			try {
 				BeanUtils.copyProperties(userBaseDto, uvo);

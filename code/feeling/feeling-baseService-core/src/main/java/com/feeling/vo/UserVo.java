@@ -14,8 +14,8 @@ import com.feeling.annotation.NotNull;
 public class UserVo  extends BaseVo{
 
 	private Integer id;                     // 主键
+	@NotEmpty(minLength=11,maxLength=11)
 	private String mobile;//手机号
-	@NotEmpty(minLength=3,maxLength=9)
 	private String  nickName; //昵称or用户名
 	@NotNull
 	private Integer gender;//性别 0:女  1：男

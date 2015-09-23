@@ -126,7 +126,7 @@ public class UserInfoController  extends BaseController{
     @ResponseBody
     public String login(UserLoginVo userLoginVo){
     	if(userLoginVo==null||
-    			StringUtils.isEmpty(userLoginVo.getNickName())||
+    			StringUtils.isEmpty(userLoginVo.getMobile())||
     			StringUtils.isEmpty(userLoginVo.getPwd())){
     		throw new OptException(ReturnCodeEnum.PWD_UNAME_EMPTY_ERROR);
     	}
@@ -158,7 +158,7 @@ public class UserInfoController  extends BaseController{
      */
     @RequestMapping(value = "/user/reg", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String reg(UserVo uvo,HttpServletRequest request,HttpServletResponse response){
+    public String reg(UserVo uvo,String verifyCode,HttpServletRequest request,HttpServletResponse response){
     	 ReturnResult returnResult=new ReturnResult();
          returnResult.setResultEnu(ReturnCodeEnum.SUCCESS); 
          Integer uid = userService.regNewUser(uvo);
