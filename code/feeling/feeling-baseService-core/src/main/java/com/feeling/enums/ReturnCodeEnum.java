@@ -17,7 +17,7 @@ public enum ReturnCodeEnum  {
 	PWD_NO_MODIFY_ERROR(2001, "新密码和旧密码一样，不需要修改"),
 	PWD_ERROR(2002, "用户名密码错误"),
 	NO_USER_ERROR(2003, "用户不存在"),
-	USER_NAME_DUPLICATEKSY_ERROR(2004, "用户名[%s]已存在"),
+	USER_NAME_DUPLICATEKSY_ERROR(2004, "手机号[%s]已注册"),
 	PWD_UNAME_EMPTY_ERROR(2005, "手机号或密码不能为空"),
 	STATUS_ERROR_ERROR(2006, "用户状态异常"),
 	STATUS_EMPTY_ERROR(2007, "用户ID或状态不能为空"),

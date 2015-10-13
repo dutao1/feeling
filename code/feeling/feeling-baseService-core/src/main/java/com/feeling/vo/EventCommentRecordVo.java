@@ -14,7 +14,7 @@ public class EventCommentRecordVo   extends BaseVo  {
 	private Integer uid;//用户id
 	@NotNull
 	private Integer eid; //主事件id
-	@NotEmpty(maxLength = 300, minLength = 1)
+	@NotEmpty(maxLength = 300, minLength = 1,desc="评论内容")
 	private String comment;//评论
 	private Integer isDisplay;//是否显示
 	private String mobile;//手机号

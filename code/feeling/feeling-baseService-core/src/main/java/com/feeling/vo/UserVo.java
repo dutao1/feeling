@@ -14,12 +14,12 @@ import com.feeling.annotation.NotNull;
 public class UserVo  extends BaseVo{
 
 	private Integer id;                     // 主键
-	@NotEmpty(minLength=11,maxLength=11)
+	@NotEmpty(minLength=11,maxLength=11,desc="手机号")
 	private String mobile;//手机号
 	private String  nickName; //昵称or用户名
 	@NotNull
 	private Integer gender;//性别 0:女  1：男
-	@NotEmpty(minLength=6,maxLength=9)
+	@NotEmpty(minLength=6,maxLength=9,desc="密码")
 	private String pwd;//密码 加密后的
 	private String cityCode;//城市代码
 	private Date birthday;//生日

@@ -6,6 +6,7 @@ import java.util.Calendar;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -70,7 +71,7 @@ public class ControllerAop {
                                 String filedName = field.getName();
                                 Object result = r.getInvoke(obj, filedName,false);
                                 if (result == null) {
-                                	paramErrorMsg = filedName + " cannot be null" ;
+                                	paramErrorMsg = filedName + "不能为空" ;
                                 	paramError=true;
                                 	break;
                                 }
@@ -79,20 +80,25 @@ public class ControllerAop {
 
                             	 String filedName = field.getName();
                                  Object result = r.getInvoke(obj, filedName,false);
+                                 NotEmpty notEmpty = field.getAnnotation(NotEmpty.class);
+                                 String desc = notEmpty.desc();
+                            	 if(StringUtils.isEmpty(desc)){
+                            		 desc=filedName;
+                            	 }
                                  if (result == null||result.toString().equals("")) {
-                                 	paramErrorMsg = filedName + " cannot be empty" ;
+                                 	paramErrorMsg = desc + "不能为空" ;
                                  	paramError=true;
                                  	break;
                                  }else{
-                                	 NotEmpty notEmpty = field.getAnnotation(NotEmpty.class);
+                                	
                                 	 int max = notEmpty.maxLength();
                                 	 int min = notEmpty.minLength();
                                      if(result.toString().length()<min){
-                                    	paramErrorMsg = filedName + " minLength is ["+min +"], but input ["+result.toString().length()+"]";
+                                    	paramErrorMsg = desc + "长度不能小于["+min +"]";
                                       	paramError=true;
                                       	break;
                                      }else if (result.toString().length()>max){
-                                    	paramErrorMsg = filedName + " maxLength is ["+max +"], but input ["+result.toString().length()+"]";
+                                    	paramErrorMsg = desc + "长度不能大于["+max +"]";
                                        	paramError=true;
                                        	break;
                                      }

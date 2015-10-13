@@ -17,4 +17,6 @@ public @interface NotEmpty {
 	public int minLength()  ;
 	
 	public int maxLength()  ;
+	
+	public String desc()  default "" ;
 }

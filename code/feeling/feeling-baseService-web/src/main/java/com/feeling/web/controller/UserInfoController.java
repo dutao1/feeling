@@ -173,7 +173,31 @@ public class UserInfoController  extends BaseController{
 		} catch (Exception e) {
 			super.writeErrorLog(e.getMessage());
 		}
-         returnResult.setData(uid);
+         if(uid>0){
+        	UserLoginVo userLoginVo = new UserLoginVo();
+        	userLoginVo.setMobile(uvo.getMobile());
+        	userLoginVo.setPwd(uvo.getPwd());
+            UserBaseDto udto = userService.login(userLoginVo);
+         	if(udto!=null){
+         		udto.getStatus();
+         		if(UserStatusEnum.OK.getCode()!=udto.getStatus()){
+         			throw new OptException(ReturnCodeEnum.STATUS_ERROR_ERROR);
+         		}
+         		uvo = new UserVo();
+         		try {
+     				BeanUtils.copyProperties(uvo, udto);
+     			} catch (Exception e) {
+     				super.writeErrorLog(e.getMessage());
+     			} 
+         	}
+            uvo.setAvatar(webFileHelper.getUserAvatarUrl(uvo.getAvatar()));
+            uvo.setLoginToken(userLoginVo.getLoginToken());
+            uvo.setMobile(null);
+            uvo.setPwd(null);
+            returnResult.setData(uvo);
+         }else{
+        	 returnResult.setData(new UserVo());
+         }
          return returnResult.toString();
     }
    
