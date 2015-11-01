@@ -18,7 +18,7 @@
 		<append>true</append>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- 日志文件输出的文件名 -->
-			<FileNamePattern>${LOGGING_ROOT}/backup/default.log.%d{yyyyMMdd}</FileNamePattern>
+			<FileNamePattern>${LOGGING_ROOT}/backup/default.%d{yyyyMMdd}.log</FileNamePattern>
 			<MaxHistory>20</MaxHistory>
 		</rollingPolicy>
 		<encoder charset="UTF-8">
@@ -30,7 +30,7 @@
 		<append>true</append>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- 日志文件输出的文件名 -->
-			<FileNamePattern>${LOGGING_ROOT}/backup/web.log.%d{yyyyMMdd}</FileNamePattern>
+			<FileNamePattern>${LOGGING_ROOT}/backup/web.%d{yyyyMMdd}.log</FileNamePattern>
 			<MaxHistory>30</MaxHistory>
 		</rollingPolicy>
 		<encoder charset="UTF-8">
@@ -42,7 +42,7 @@
 		<append>true</append>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- 日志文件输出的文件名 -->
-			<FileNamePattern>${LOGGING_ROOT}/backup/user_service.log.%d{yyyyMMdd}</FileNamePattern>
+			<FileNamePattern>${LOGGING_ROOT}/backup/user_service.%d{yyyyMMdd}.log</FileNamePattern>
 			<MaxHistory>30</MaxHistory>
 		</rollingPolicy>
 		<encoder charset="UTF-8">
@@ -54,7 +54,7 @@
 		<append>true</append>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- 日志文件输出的文件名 -->
-			<FileNamePattern>${LOGGING_ROOT}/backup/event_service.log.%d{yyyyMMdd}</FileNamePattern>
+			<FileNamePattern>${LOGGING_ROOT}/backup/event_service.%d{yyyyMMdd}.log</FileNamePattern>
 			<MaxHistory>30</MaxHistory>
 		</rollingPolicy>
 		<encoder charset="UTF-8">
@@ -69,7 +69,7 @@
     		<level>ERROR</level>
     	</filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      		<fileNamePattern>${LOGGING_ROOT}/backup/error.log.%d{yyyyMMdd}</fileNamePattern>
+      		<fileNamePattern>${LOGGING_ROOT}/backup/error.%d{yyyyMMdd}.log</fileNamePattern>
       		<maxHistory>20</maxHistory>
     	</rollingPolicy>
 		<encoder charset="UTF-8">
@@ -93,14 +93,10 @@
 	<!-- [公共Appender] 数据访问层 -->
 	<appender name="DAO-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOGGING_ROOT}/dao.log</file>
-    	<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-	      	<fileNamePattern>${LOGGING_ROOT}/backup/dao.log.%i</fileNamePattern>
-	      	<minIndex>1</minIndex>
-	      	<maxIndex>5</maxIndex>
-	    </rollingPolicy>
-		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-          	<maxFileSize>100MB</maxFileSize>
-        </triggeringPolicy>
+	    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      		<fileNamePattern>${LOGGING_ROOT}/backup/dao.%d{yyyyMMdd}.log</fileNamePattern>
+      		<maxHistory>20</maxHistory>
+    	</rollingPolicy>
 		<encoder charset="UTF-8">
 			<pattern>%d [%t] %-5p %c - [%m]%n</pattern>
 		</encoder>

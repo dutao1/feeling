@@ -73,7 +73,7 @@ public class SqlConstants {
 	/**
 	 * 获得对应事件的评论列表
 	 */
-	public static final String GET_EVENT_COMMENT_LIST_BY_EVENTID="SELECT * FROM event_comment_record WHERE  eid= #{eid} ORDER BY id DESC limit ${offset},${limit}" ;
+	public static final String GET_EVENT_COMMENT_LIST_BY_EVENTID="SELECT t1.id,t1.eid,t1.uid,t1.lat,t1.lon,t1.create_time,t1.mobile,t1.device_type,t1.comment,t1.is_display,t1.event_city,t2.nick_name,t2.avatar FROM event_comment_record   t1 LEFT JOIN user_base_info t2 ON t1.uid = t2.id  WHERE  eid= #{eid} ORDER BY id DESC limit ${offset},${limit}" ;
 	
 	
 	/**

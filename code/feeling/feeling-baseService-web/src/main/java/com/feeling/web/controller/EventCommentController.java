@@ -16,11 +16,13 @@ import com.feeling.exception.OptException;
 import com.feeling.service.EventCommentService;
 import com.feeling.vo.EventCommentRecordVo;
 import com.feeling.web.common.ReturnResult;
+import com.feeling.web.common.WebFileHelper;
 @Controller
 public class EventCommentController   extends BaseController{
 	@Autowired
     private EventCommentService eventCommentService;
- 
+	@Autowired
+    private WebFileHelper webFileHelper;
     
     /**
      * 查询评论总数
@@ -69,6 +71,11 @@ public class EventCommentController   extends BaseController{
     	}
     	if(isFindList){
     		list= eventCommentService.getCommentListByEidPage(eid, super.defaultCommentPageSize, offset);
+    		if(list!=null){
+    			for(EventCommentRecordDto eventComment:list){
+    				eventComment.setAvatar(webFileHelper.getUserAvatarUrl(eventComment.getAvatar()));
+    			}
+    		}
     	}
     	hm.put("commentList", list) ;
         returnResult.setData(hm);
@@ -89,6 +96,11 @@ public class EventCommentController   extends BaseController{
     	eventCommentService.toCommentEvent(eventCommentRecordVo);
     	List<EventCommentRecordDto> list = eventCommentService.getCommentListByEidPage
     		(eventCommentRecordVo.getEid(), defaultCommentPageSize, 0);
+    	if(list!=null){
+			for(EventCommentRecordDto eventComment:list){
+				eventComment.setAvatar(webFileHelper.getUserAvatarUrl(eventComment.getAvatar()));
+			}
+		}
     	ReturnResult returnResult=new ReturnResult();
         returnResult.setResultEnu(ReturnCodeEnum.SUCCESS);
         int count = eventCommentService.countEventCommentListByEid(eventCommentRecordVo.getEid());

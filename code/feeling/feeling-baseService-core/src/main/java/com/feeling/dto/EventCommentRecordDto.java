@@ -19,7 +19,13 @@ public class EventCommentRecordDto extends BaseDto {
 	private String nickName;//昵称
 	private Integer status;
 	private String eventCity;//城市
-	 
+	private String avatar;//对应用户头像地址
+	public String getAvatar() {
+		return avatar;
+	}
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
+	}
 	public String getEventCity() {
 		return eventCity;
 	}

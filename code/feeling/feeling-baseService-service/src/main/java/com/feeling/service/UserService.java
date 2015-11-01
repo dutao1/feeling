@@ -135,10 +135,16 @@ public class UserService extends BaseService{
 	 */
 	@Transactional
 	public Integer regNewUser(UserVo uvo){
-		
 		Integer uid = -1;
 		if(uvo!=null){
-			uvo.setNickName(uvo.getMobile());
+			String nickName = uvo.getNickName();
+			String mobile = uvo.getMobile();
+			if(StringUtils.isEmpty(nickName)){
+				 if(StringUtils.isNotEmpty(mobile) &&mobile.length()==11){
+					 nickName = mobile.substring(mobile.length()-4);
+				 }
+			}
+			uvo.setNickName(nickName);
 			UserBaseDto userBaseDto = new UserBaseDto();
 			try {
 				BeanUtils.copyProperties(userBaseDto, uvo);
