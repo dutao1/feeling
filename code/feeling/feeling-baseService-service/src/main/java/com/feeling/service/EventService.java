@@ -273,7 +273,7 @@ public class EventService extends BaseService {
 						if(eventBase.getLat()!=null&&eventBase.getLon()!=null){
 							double dist = geoHash.getPointDistance
 										(lat, lon, eventBase.getLat(),eventBase.getLon());
-							recommendVo.setDistMeter(dist);
+							recommendVo.setDistMeter(new Double(dist).longValue());
 							recommendVo.setDistKm(dist/1000);
 						}
 						

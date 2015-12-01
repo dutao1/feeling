@@ -26,7 +26,7 @@ public class EventRecommendVo extends BaseVo{
 	private List<EventPicVo> eventPicVos;//图片/视频 vo
 	private EventVoteVo eventVoteVo;//投票vo
 	private EventTextVo eventTextVo;//文案vo
-	private Double distMeter;//相距多少米
+	private Long distMeter;//相距多少米
 	private Double distKm;// 相距多少公里
 	public String getRemark() {
 		return remark;
@@ -34,10 +34,10 @@ public class EventRecommendVo extends BaseVo{
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
-	public Double getDistMeter() {
+	public Long getDistMeter() {
 		return distMeter;
 	}
-	public void setDistMeter(Double distMeter) {
+	public void setDistMeter(Long distMeter) {
 		this.distMeter = distMeter;
 	}
 	public Double getDistKm() {

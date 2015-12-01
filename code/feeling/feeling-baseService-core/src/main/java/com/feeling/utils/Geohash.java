@@ -28,10 +28,10 @@ public class Geohash {//tb8ch6nhr0e9
  
     public static void main(String[] args) {
         
-    	double lon1=30;   
-        double lat1=20;  
-        double lon2=30;  
-        double lat2=16;
+    	double lon1=-30;   
+        double lat1=20.34;  
+        double lon2=10.23;  
+        double lat2=-61.65;
         
         double lon3=30;  
         double lat3=17; 
@@ -44,7 +44,9 @@ public class Geohash {//tb8ch6nhr0e9
         String geocode;  
           
         dist=getPointDistance(lat1, lon1, lat2, lon2);   
-        System.out.println("两点相距2：" + dist + " 米");  
+        dist=2041423011.4567;
+        long i = new Double(dist).longValue();
+        System.out.println("两点相距2：" + i + " 米");  
         dist=getPointDistance(lat1, lon1, lat3, lon3);  
         System.out.println("两点相距3：" + dist + " 米"); 
         
