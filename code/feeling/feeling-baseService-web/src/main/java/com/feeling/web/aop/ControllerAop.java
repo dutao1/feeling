@@ -62,9 +62,10 @@ public class ControllerAop {
                     Object obj = args[i];
                     if (obj != null) {
                     	if(obj.getClass().getName().indexOf("com.feeling.vo")<0){
-                        	continue;
+                    		methodSB.append(obj+",");
+                        }else{
+                        	methodSB.append(JSON.toJSONString(obj));
                         }
-                    	methodSB.append(JSON.toJSONString(obj));
                         Field[] fields = obj.getClass().getDeclaredFields();
                         for (Field field : fields) {
                             if (!paramError&&field.isAnnotationPresent(NotNull.class)) {
