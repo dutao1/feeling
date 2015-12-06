@@ -164,9 +164,6 @@ public class EventController   extends BaseController{
     @RequestMapping(value = "/event/recommendEvent", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @ResponseBody
     public String recommendEvent(Integer uid,String deviceId,Double lat,Double lon){
-    	if(uid==null&&StringUtils.isEmpty(deviceId)){
-    		throw new OptException(ReturnCodeEnum.PARAMETER_ERROR,"用户id和设备id不能同时为空");
-    	}
     	if(lat==null||lon==null){
     		throw new OptException(ReturnCodeEnum.EVENT_LOT_ERROR);
     	}

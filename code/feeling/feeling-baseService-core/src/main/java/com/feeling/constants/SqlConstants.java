@@ -64,7 +64,7 @@ public class SqlConstants {
 			        + " ,eid,lat,lon,location_long_code,location_hash,nick_name,mobile,event_city,create_time FROM (  SELECT id,lat,lon,location_long_code,"
 			        + " location_hash,eid,ABS(location_long_code-#{locationLongCode}) nearcode,create_time,event_city,nick_name,mobile "
 			        + " FROM event_cycle_record"
-					+"  WHERE uid<>#{uid} AND device_id <>#{deviceId}   "
+					+"  WHERE uid<>#{uid} "
 					+" ) t  ORDER BY nearcode ASC,create_time DESC LIMIT "+NEAR_LIMIT_NUMS;
 
 	
