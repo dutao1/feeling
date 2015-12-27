@@ -25,6 +25,14 @@ public enum ReturnCodeEnum  {
 	PWD_MODIFY_INPUT_ERROR(2009, "新旧密码输入有误"),
 	LOGIN_TOKEN_EMPTY(2010, "用户登录密钥为空"),
 	LOGIN_TOKEN_ERROR(2011, "用户登录密钥异常,请重新登录"),
+	MOBILE_EMPTY_ERROR(2012, "手机号不能为空"),
+	
+	VERIFY_CODE_EMPTY(2020, "验证码不能为空"),
+	VERIFY_CODE_ERROR(2021, "验证码输入错误"),
+	VERIFY_CODE_FRE_QUENCY(2022, "验证码发送过于频繁,请%s秒重试"),
+	VERIFY_CODE_MAX_TIMES(2023, "1小时内发送次数达上限"),
+	VERIFY_CODE_EXPIRE(2024, "验证码未发送或已过期"),
+	VERIFY_CODE_SEND_ERROR(2025, "下发验证码异常,稍后重试"),
 	
 	EVENT_TYPE_EMPTY_ERROR(3001, "事件类型不能为空"),
 	EVENT_PUBLISH_ERROR(3002, "事件发布失败，id为空"),

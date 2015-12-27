@@ -16,6 +16,7 @@ import com.feeling.enums.ReturnCodeEnum;
 import com.feeling.enums.UserStatusEnum;
 import com.feeling.exception.OptException;
 import com.feeling.service.UserService;
+import com.feeling.service.VerifyCodeService;
 import com.feeling.vo.UserLoginVo;
 import com.feeling.vo.UserUptVo;
 import com.feeling.vo.UserVo;
@@ -32,6 +33,8 @@ public class UserInfoController  extends BaseController{
 	private UserService userService;
     @Autowired
     private WebFileHelper webFileHelper;
+    @Autowired
+    private VerifyCodeService verifyCodeService;
     /**
      * 密码修改
      * @param uid 用户id
@@ -160,7 +163,9 @@ public class UserInfoController  extends BaseController{
     @ResponseBody
     public String reg(UserVo uvo,String verifyCode,HttpServletRequest request,HttpServletResponse response){
     	 ReturnResult returnResult=new ReturnResult();
-         returnResult.setResultEnu(ReturnCodeEnum.SUCCESS); 
+         returnResult.setResultEnu(ReturnCodeEnum.SUCCESS);
+        // verifyCodeService.checkVerfyCode(uvo.getMobile(), verifyCode);
+         
          Integer uid = userService.regNewUser(uvo);
          try {
         	 String url = webFileHelper.uploadUserAvatar(request,uid);
@@ -201,5 +206,16 @@ public class UserInfoController  extends BaseController{
          return returnResult.toString();
     }
    
-    
-}
+    @RequestMapping(value = "/user/verifyCode", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String reg(String mobile,HttpServletRequest request,HttpServletResponse response){
+    	 
+    	 if(StringUtils.isEmpty(mobile)){
+    		throw new OptException(ReturnCodeEnum.MOBILE_EMPTY_ERROR);
+    	 }
+    	 ReturnResult returnResult=new ReturnResult();
+         returnResult.setResultEnu(ReturnCodeEnum.SUCCESS); 
+         verifyCodeService.sendVerifyCode(mobile,request.getRemoteAddr());
+         return returnResult.toString();
+    }
+  }
