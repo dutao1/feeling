@@ -99,10 +99,10 @@ public class ReturnResult implements Serializable {
 	public String toString() {
 		JSONObject resultObject = new JSONObject();
 		if (code == null) {
-			resultObject.put("status", ReturnCodeEnum.SUCCESS.getCode());
+			resultObject.put("code", ReturnCodeEnum.SUCCESS.getCode());
 			resultObject.put("message", ReturnCodeEnum.SUCCESS.getMessage()+" ");
 		} else {
-			resultObject.put("status", code);
+			resultObject.put("code", code);
 			resultObject.put("message",errorDesc);
 		}
 
@@ -138,7 +138,7 @@ public class ReturnResult implements Serializable {
 			 if (data instanceof OptException) {
 				OptException exp = (OptException) data;
 				JSONObject errorObject = new JSONObject();
-				errorObject.put("errorCode", exp.getCode());
+				errorObject.put("code", exp.getCode());
 				errorObject.put("message", exp.getMessage());
 				resultObject.put("data", errorObject);
 			} else {

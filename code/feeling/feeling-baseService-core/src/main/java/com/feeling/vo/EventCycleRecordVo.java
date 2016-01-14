@@ -19,7 +19,14 @@ public class EventCycleRecordVo  extends BaseVo {
 	private String nickName;//昵称 
 	private String eventCity;//城市
 	private Date createTime;//创建时间
+	private Integer status;//状态-见EventStatusEnum
 	
+	public Integer getStatus() {
+		return status;
+	}
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
 	public Date getCreateTime() {
 		return createTime;
 	}

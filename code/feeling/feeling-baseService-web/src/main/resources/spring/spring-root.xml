@@ -25,5 +25,5 @@
     <import resource="classpath:/spring/spring-context.xml" />
     <import resource="classpath:/spring/spring-redis.xml" />
     <import resource="classpath:/spring/spring-mvc.xml" />
-        
+    <import resource="classpath:/spring/spring-task.xml" />   
 </beans>

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.feeling.constants.SqlConstants;
 import com.feeling.dto.EventCycleRecordDto;
@@ -32,4 +33,11 @@ public interface EventCycleRecordDao  extends  BaseDao<EventCycleRecordDto> {
 	@Select(SqlConstants.GET_EVENT_CYCLE_BY_ID)
 	public List<EventCycleRecordDto> getEventCycleInfo(@Param("eid")Integer eid);
 	
+	/**
+	 * 更新事件相关状态
+	 * @param eid
+	 * @param status
+	 */
+	@Update("update event_cycle_record set status=#{status} where eid=#{eid}")
+	public void updateEventCycleStatus(@Param("eid")Integer eid,@Param("status")Integer status);
 }

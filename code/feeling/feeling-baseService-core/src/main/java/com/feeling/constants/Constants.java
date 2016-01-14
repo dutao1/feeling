@@ -20,4 +20,11 @@ public class Constants {
 	public static final String MOBILE_SMS = "mobile";
 	public static final String CODE_SMS = "code";
 	public static final String RETURN_CODE_SUCCESSED_SMS = "0";
+	//事件被skip的最大次数
+	public static final int MAX_SKIP_TIME = 50;
+	
+	/**
+	 * 多少天之前的过期  -7
+	 */
+	public static final int EXPIRE_DAYS = -7;
 }

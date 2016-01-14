@@ -15,11 +15,10 @@
 	<!-- [公共Appender] 默认 -->
 	<appender name="DEFAULT-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOGGING_ROOT}/default.log</file>
-		<append>true</append>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- 日志文件输出的文件名 -->
 			<FileNamePattern>${LOGGING_ROOT}/backup/default.%d{yyyyMMdd}.log</FileNamePattern>
-			<MaxHistory>20</MaxHistory>
+			<MaxHistory>30</MaxHistory>
 		</rollingPolicy>
 		<encoder charset="UTF-8">
 			<pattern>%d [%t] %-5p %c - [%m]%n</pattern>
@@ -27,7 +26,6 @@
 	</appender>
 	<appender name="WEB-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOGGING_ROOT}/web.log</file>
-		<append>true</append>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- 日志文件输出的文件名 -->
 			<FileNamePattern>${LOGGING_ROOT}/backup/web.%d{yyyyMMdd}.log</FileNamePattern>
@@ -39,7 +37,6 @@
 	</appender>
 	<appender name="USER_SERVICE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOGGING_ROOT}/user_service.log</file>
-		<append>true</append>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- 日志文件输出的文件名 -->
 			<FileNamePattern>${LOGGING_ROOT}/backup/user_service.%d{yyyyMMdd}.log</FileNamePattern>
@@ -51,7 +48,6 @@
 	</appender>
 	<appender name="EVENT_SERVICE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOGGING_ROOT}/event_service.log</file>
-		<append>true</append>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- 日志文件输出的文件名 -->
 			<FileNamePattern>${LOGGING_ROOT}/backup/event_service.%d{yyyyMMdd}.log</FileNamePattern>
@@ -70,7 +66,7 @@
     	</filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       		<fileNamePattern>${LOGGING_ROOT}/backup/error.%d{yyyyMMdd}.log</fileNamePattern>
-      		<maxHistory>20</maxHistory>
+      		<maxHistory>30</maxHistory>
     	</rollingPolicy>
 		<encoder charset="UTF-8">
 			<pattern>%d [%t] %-5p %c - [%m]%n</pattern>
@@ -95,7 +91,7 @@
 		<file>${LOGGING_ROOT}/dao.log</file>
 	    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       		<fileNamePattern>${LOGGING_ROOT}/backup/dao.%d{yyyyMMdd}.log</fileNamePattern>
-      		<maxHistory>20</maxHistory>
+      		<maxHistory>30</maxHistory>
     	</rollingPolicy>
 		<encoder charset="UTF-8">
 			<pattern>%d [%t] %-5p %c - [%m]%n</pattern>

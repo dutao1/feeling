@@ -29,7 +29,7 @@ public class UserBaseDaoTest  extends DaoTestBase {
 	@Autowired
 	EventVoteDao eventVoteDao;
 	
-	//@Test
+	@Test
 	public void testInsertUserBase(){
 		UserBaseDto u= new UserBaseDto();
 		u.setMobile("13212312313");

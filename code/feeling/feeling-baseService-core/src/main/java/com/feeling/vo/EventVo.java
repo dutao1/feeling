@@ -1,6 +1,5 @@
 package com.feeling.vo;
 
-import com.feeling.annotation.NotEmpty;
 
 public class EventVo extends BaseVo{
 
@@ -15,6 +14,14 @@ public class EventVo extends BaseVo{
 	private Integer commentTimes;//评论次数
 	private String mobile;//手机号
 	private String nickName;//昵称
+	private Integer status;//状态，是否可用,1:可用,-1:删除，-2:过期
+	
+	public Integer getStatus() {
+		return status;
+	}
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
 	public Integer getId() {
 		return id;
 	}

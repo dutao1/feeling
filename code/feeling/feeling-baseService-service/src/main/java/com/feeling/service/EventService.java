@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.feeling.constants.Constants;
 import com.feeling.dao.EventBaseDao;
 import com.feeling.dao.EventCycleRecordDao;
 import com.feeling.dao.EventPicDao;
@@ -23,6 +24,7 @@ import com.feeling.dto.EventCycleRecordDto;
 import com.feeling.dto.EventPicDto;
 import com.feeling.dto.EventTextDto;
 import com.feeling.dto.EventVoteDto;
+import com.feeling.enums.EventStatusEnum;
 import com.feeling.enums.EventTypeEnum;
 import com.feeling.enums.ReturnCodeEnum;
 import com.feeling.exception.OptException;
@@ -191,6 +193,15 @@ public class EventService extends BaseService {
 		// 更新次数
 		EventBaseDto eventBaseDto = new EventBaseDto();
 		eventBaseDto.setId(eventCycleRecordVo.getEid());
+		EventBaseDto eventBase = eventBaseDao.selectByPk(eventBaseDto);
+		Integer skipTimes = 	eventBase.getSkipTimes();
+		if(skipTimes!=null&&skipTimes.intValue()+1
+				  >=Constants.MAX_SKIP_TIME){
+			  //关闭事件
+			//是否可用,1:可用,-1:删除，-2:过期,-3被忽略次数达到上限
+			eventBaseDto.setStatus(EventStatusEnum.SKIP_UPPER.getCode());
+			eventCycleRecordDao.updateEventCycleStatus(eventCycleRecordVo.getEid(), EventStatusEnum.SKIP_UPPER.getCode());
+		}
 		eventBaseDto.setSkipTimes(1);
 		int result = eventBaseDao.updateByPk(eventBaseDto);
 		return result == 1 ? true : false;
@@ -256,6 +267,13 @@ public class EventService extends BaseService {
 				for (EventBaseDto eventBase : list) {
 					EventRecommendVo recommendVo = hm.get(eventBase.getId());
 					if (recommendVo != null) {
+						//删除过期
+						Integer status = eventBase.getStatus();
+						if(status!=null&&
+								EventStatusEnum.EXPIRE.getCode()==status.intValue()){
+							hm.remove(eventBase.getId());
+							continue;
+						}
 						//添加时间基础信息
 						recommendVo.setCommentTimes(eventBase.getCommentTimes());
 						recommendVo.setSpreadTimes(eventBase.getSpreadTimes());
