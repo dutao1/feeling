@@ -44,10 +44,10 @@ public class UserEventController extends BaseController{
     	if(eventVo.getUid()==null ){
     		throw new OptException(ReturnCodeEnum.PARAMETER_ERROR,"用户id不能为空");
     	}
-    	//boolean isLogin = redisClient.checkLoginToken(eventVo.getLoginToken(), eventVo.getUid());
-    	/*if(!isLogin){
+    	boolean isLogin = redisClient.checkLoginToken(eventVo.getLoginToken(), eventVo.getUid());
+    	if(!isLogin){
     		throw new OptException(ReturnCodeEnum.LOGIN_TOKEN_ERROR); 
-    	}*/
+    	}
     	int count = eventService.countEventListByUid(eventVo.getUid());
     	HashMap<String,Object> hm = new HashMap<String,Object>();
     	hm.put("userEventCount", count) ;
@@ -100,8 +100,13 @@ public class UserEventController extends BaseController{
 	 */
 	@RequestMapping(value = "/userEvent/userEventList", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String getUserEventList(Integer uid,Integer offset,Integer limit,Integer count){
-    	List<UserEventVo> list  =null;
+    public String getUserEventList(Integer uid,Integer offset,Integer limit,Integer count,String loginToken){
+		
+		boolean isLogin = redisClient.checkLoginToken(loginToken,uid);
+    	if(!isLogin){
+    		throw new OptException(ReturnCodeEnum.LOGIN_TOKEN_ERROR); 
+    	}
+		List<UserEventVo> list  =null;
     	boolean isFindList = true;//是否查询列表
     	int dataCount = 0;
     	count = count==null?0:count;

@@ -101,7 +101,7 @@ public class SqlConstants {
 	/**
 	 * 根据用户获得所有事件信息
 	 */
-	public static final String GET_EVENT_LIST_BY_UID="select  * from event_base_info where uid=#{uid} limit ${offset},${limit}";
+	public static final String GET_EVENT_LIST_BY_UID="select  * from event_base_info where uid=#{uid} ORDER BY create_time DESC limit ${offset},${limit}";
 	
 	/**
 	 * 统计用户获得所有事件信息数量
