@@ -46,7 +46,7 @@ public class UserService extends BaseService{
 		if(userDto!=null){
 			userDto.setPwd(null);
 		}
-		return  userBaseDao.getUserById(id);
+		return  userDto;
 	}
 	/**
 	 * 更新用户信息，包括更新状态，照片等等
