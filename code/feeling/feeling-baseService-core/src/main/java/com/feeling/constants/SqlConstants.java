@@ -58,6 +58,12 @@ public class SqlConstants {
 	public static final String CHECK_PWD_BYMOBILE_SQL = "select id,avatar,status,mobile from "+USER_BASE_TABLE+" where mobile=#{mobile} and pwd=#{pwd} limit 1" ;
 	
 	/**
+	 * 根据id查数据
+	 */
+	public static final String GET_USERINFO_SQL = "select * from "+USER_BASE_TABLE+" where id=#{id}  limit 1" ;
+	
+	
+	/**
 	 * 取离最近的前10条记录
 	 */
 	public static final String LIST_NEAR_EVENTS="SELECT id"

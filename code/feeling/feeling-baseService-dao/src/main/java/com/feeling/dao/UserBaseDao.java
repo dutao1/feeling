@@ -25,4 +25,6 @@ public interface UserBaseDao  extends  BaseDao<UserBaseDto>{
 	@Select(SqlConstants.CHECK_PWD_BYMOBILE_SQL)
 	public UserBaseDto checkPwdByMobile(@Param("mobile")String mobile,@Param("pwd")String pwd);
 	
+	@Select(SqlConstants.GET_USERINFO_SQL)
+	public UserBaseDto getUserById(@Param("id")Integer id);
 }

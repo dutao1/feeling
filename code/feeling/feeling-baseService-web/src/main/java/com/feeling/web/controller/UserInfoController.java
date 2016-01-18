@@ -1,5 +1,7 @@
 package com.feeling.web.controller;
 
+import java.util.HashMap;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -68,6 +70,7 @@ public class UserInfoController  extends BaseController{
     	ReturnResult returnResult=new ReturnResult();
         returnResult.setResultEnu(ReturnCodeEnum.SUCCESS);
         boolean result = false;
+        HashMap<String,Object> hm =  new HashMap<String,Object>();
         try {
 	       	 String url = webFileHelper.uploadUserAvatar(request,userVo.getId());
 	       	 if(url!=null){
@@ -76,10 +79,17 @@ public class UserInfoController  extends BaseController{
 	       	 UserVo uvo = new UserVo();
 	       	 BeanUtils.copyProperties(uvo, userVo);
 	       	 result =  userService.updateUserInfo(uvo,userVo.getLoginToken()) ;
-		} catch (Exception e) {
+	       	 if(result){
+	       		UserBaseDto userBaseDto =userService.
+	       				getUserById(uvo.getId());
+	       		userBaseDto.setAvatar(webFileHelper.getUserAvatarUrl(userBaseDto.getAvatar()));
+	       		hm.put("userInfo", userBaseDto);
+	       	 }
+        } catch (Exception e) {
 			super.writeErrorLog(e.getMessage());
 		}
-    	returnResult.setData(result);
+        hm.put("result", result);
+    	returnResult.setData(hm);
         return returnResult.toString();
     }
     /**

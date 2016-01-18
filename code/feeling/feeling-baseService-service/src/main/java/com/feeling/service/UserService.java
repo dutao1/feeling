@@ -36,6 +36,14 @@ public class UserService extends BaseService{
     @Autowired
     RedisClient redisClient;
     
+    /**
+     * 根据id查询数据
+     * @param id  id
+     * @return UserBaseDto
+     */
+	public UserBaseDto getUserById(Integer id){
+		return  userBaseDao.getUserById(id);
+	}
 	/**
 	 * 更新用户信息，包括更新状态，照片等等
 	 * @param uvo 必须有用户id
