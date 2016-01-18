@@ -42,6 +42,10 @@ public class UserService extends BaseService{
      * @return UserBaseDto
      */
 	public UserBaseDto getUserById(Integer id){
+		UserBaseDto userDto = userBaseDao.getUserById(id);
+		if(userDto!=null){
+			userDto.setPwd(null);
+		}
 		return  userBaseDao.getUserById(id);
 	}
 	/**
