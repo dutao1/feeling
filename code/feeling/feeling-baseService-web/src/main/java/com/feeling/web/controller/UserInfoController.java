@@ -23,7 +23,7 @@ import com.feeling.vo.UserLoginVo;
 import com.feeling.vo.UserUptVo;
 import com.feeling.vo.UserVo;
 import com.feeling.web.common.ReturnResult;
-import com.feeling.web.common.WebFileHelper;
+import com.feeling.service.common.WebFileHelper;
 /**
  * @author dutao
  *
@@ -70,7 +70,7 @@ public class UserInfoController  extends BaseController{
     	ReturnResult returnResult=new ReturnResult();
         returnResult.setResultEnu(ReturnCodeEnum.SUCCESS);
         boolean result = false;
-        HashMap<String,Object> hm =  new HashMap<String,Object>();
+        UserBaseDto userBaseDto =null;
         try {
 	       	 String url = webFileHelper.uploadUserAvatar(request,userVo.getId());
 	       	 if(url!=null){
@@ -80,16 +80,14 @@ public class UserInfoController  extends BaseController{
 	       	 BeanUtils.copyProperties(uvo, userVo);
 	       	 result =  userService.updateUserInfo(uvo,userVo.getLoginToken()) ;
 	       	 if(result){
-	       		UserBaseDto userBaseDto =userService.
+	       		 userBaseDto =userService.
 	       				getUserById(uvo.getId());
 	       		userBaseDto.setAvatar(webFileHelper.getUserAvatarUrl(userBaseDto.getAvatar()));
-	       		hm.put("userInfo", userBaseDto);
 	       	 }
         } catch (Exception e) {
 			super.writeErrorLog(e.getMessage());
 		}
-        hm.put("result", result);
-    	returnResult.setData(hm);
+    	returnResult.setData(userBaseDto);
         return returnResult.toString();
     }
     /**

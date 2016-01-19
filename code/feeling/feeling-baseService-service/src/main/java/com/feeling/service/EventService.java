@@ -29,6 +29,7 @@ import com.feeling.enums.EventTypeEnum;
 import com.feeling.enums.ReturnCodeEnum;
 import com.feeling.exception.OptException;
 import com.feeling.log.LogInfo;
+import com.feeling.service.common.WebFileHelper;
 import com.feeling.vo.EventCycleRecordVo;
 import com.feeling.vo.EventPicVo;
 import com.feeling.vo.EventRecommendVo;
@@ -56,7 +57,8 @@ public class EventService extends BaseService {
 	EventPicDao eventPicDao;// 图片及视频事件操作
 	@Autowired
 	EventCycleRecordDao eventCycleRecordDao;// 事件流转操作
-	
+	@Autowired
+    private WebFileHelper webFileHelper;
 	/**
 	 * 查询用id 发布的事件数量
 	 * @param uid 用户id
@@ -274,7 +276,7 @@ public class EventService extends BaseService {
 							hm.remove(eventBase.getId());
 							continue;
 						}
-						//添加时间基础信息
+						//添加事件基础信息
 						recommendVo.setCommentTimes(eventBase.getCommentTimes());
 						recommendVo.setSpreadTimes(eventBase.getSpreadTimes());
 						recommendVo.setSkipTimes(eventBase.getSkipTimes());
@@ -347,6 +349,7 @@ public class EventService extends BaseService {
 					eventBaseDto.setNickName(deviceId);
 				}
 			}
+			eventBaseDto.setStatus(EventStatusEnum.OK.getCode());
 			eventBaseDao.insertWithId(eventBaseDto);
 			eventId = eventBaseDto.getId();
 			if (eventId == null) {
@@ -359,6 +362,7 @@ public class EventService extends BaseService {
 			BeanUtils.copyProperties(eCycleDto, eventBaseDto);
 			eCycleDto.setFromEid(0);// 初始化0
 			eCycleDto.setEid(eventId);
+			eCycleDto.setStatus(EventStatusEnum.OK.getCode());
 			eventCycleRecordDao.insertWithOutId(eCycleDto, 0);
 		} catch (Exception e) {
 			LogInfo.EVENT_LOG.error(e.getMessage());
@@ -467,6 +471,8 @@ public class EventService extends BaseService {
 				for(EventPicDto edto:edtos){
 					EventPicVo eventPicVo = new EventPicVo();
 					BeanUtils.copyProperties(eventPicVo, edto);
+					String picPath = webFileHelper.getEventUrl(eventPicVo.getPicPath());
+					eventPicVo.setPicPath(picPath);
 					ePicVos.add(eventPicVo);
 				}
 				eventVo.setEventPicVos(ePicVos);

@@ -16,7 +16,7 @@ import com.feeling.exception.OptException;
 import com.feeling.service.EventCommentService;
 import com.feeling.vo.EventCommentRecordVo;
 import com.feeling.web.common.ReturnResult;
-import com.feeling.web.common.WebFileHelper;
+import com.feeling.service.common.WebFileHelper;
 @Controller
 public class EventCommentController   extends BaseController{
 	@Autowired

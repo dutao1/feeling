@@ -29,7 +29,7 @@ import com.feeling.vo.EventRecommendVo;
 import com.feeling.vo.EventVoteVo;
 import com.feeling.vo.UserEventVo;
 import com.feeling.web.common.ReturnResult;
-import com.feeling.web.common.WebFileHelper;
+import com.feeling.service.common.WebFileHelper;
 
 /**
  * @author dutao
@@ -117,7 +117,7 @@ public class EventController   extends BaseController{
     		throw new OptException(ReturnCodeEnum.PARAMETER_ERROR,"事件id为空");
     	}
     	 UserEventVo userEventVo = eventService.getEventInfoById(eid);
-    	 if(userEventVo!=null){
+    	 /*if(userEventVo!=null){
     		    List<EventPicVo> eventPicVos=  userEventVo.getEventPicVos();
 	    		if(eventPicVos!=null&&eventPicVos.size()>0){
 	    			for(EventPicVo picVo:eventPicVos){
@@ -125,7 +125,7 @@ public class EventController   extends BaseController{
 	    				picVo.setPicPath(picPath);
 	    			}
 	    		}
-		 }
+		 }*/
     	 ReturnResult returnResult=new ReturnResult();
          returnResult.setResultEnu(ReturnCodeEnum.SUCCESS);
          returnResult.setData(userEventVo);
@@ -182,8 +182,8 @@ public class EventController   extends BaseController{
 		    			for(EventPicVo picVo:listPic){
 		    				rvo.setRemark(picVo.getRemark());
 		    				picVo.setRemark(null);
-		    				String picPath = webFileHelper.getEventUrl(picVo.getPicPath());
-		    				picVo.setPicPath(picPath);
+		    				/*String picPath = webFileHelper.getEventUrl(picVo.getPicPath());
+		    				picVo.setPicPath(picPath);*/
 		    			}
 		    		}
 		    	}

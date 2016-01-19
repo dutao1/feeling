@@ -1,4 +1,4 @@
-package com.feeling.web.common;
+package com.feeling.service.common;
 
 import java.io.File;
 import java.util.Date;
@@ -115,8 +115,11 @@ public class WebFileHelper {
 	 * @return
 	 */
 	public String getEventUrl(String eventFilePath){
-		if(eventFilePath==null){
+		if(StringUtils.isEmpty(eventFilePath)){
 			return null;
+		}
+		if(eventFilePath.startsWith("http")){
+			return eventFilePath;
 		}
 		return rootUrlPath+eventFilePath;
 	}

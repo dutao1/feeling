@@ -16,7 +16,7 @@ import com.feeling.service.EventService;
 import com.feeling.service.RedisClient;
 import com.feeling.vo.UserEventVo;
 import com.feeling.web.common.ReturnResult;
-import com.feeling.web.common.WebFileHelper;
+import com.feeling.service.common.WebFileHelper;
 
 /**
  * 
